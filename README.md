@@ -1,25 +1,42 @@
-# Исследовательский прототип НИР
+# Argus
 
-## 1. Тема НИР
+`Argus` is an academic research prototype for detecting anomalies in network
+activity and user behavior. The project is being prepared as the technical base
+for a diploma thesis: it compares classical machine-learning baselines with a
+sequence-based LSTM Autoencoder on synthetic security logs, and it is structured
+so that public datasets can be added later.
 
-Разработка нейросетевой системы для прогнозирования кибератак и выявления аномального поведения пользователей на основе анализа сетевых логов и пользовательской активности.
+The repository is not a production IDS/UEBA platform. It does not provide
+real-time ingestion, SIEM integrations, incident management, access control, or
+production monitoring. Its current purpose is reproducible experimentation:
+data generation, preprocessing, feature engineering, model training, metrics,
+plots, and short anomaly explanations.
 
-## 2. Цель промежуточного прототипа
+## Current Scope
 
-Цель данного промежуточного прототипа состоит в демонстрации первого рабочего исследовательского pipeline для задачи обнаружения аномалий. Прототип охватывает генерацию синтетических логов, предобработку данных, формирование признаков, обучение baseline-моделей, обучение LSTM-Autoencoder, расчет метрик качества и сохранение итоговых артефактов.
+- Synthetic log generation for controlled anomaly scenarios.
+- Preprocessing and feature preparation for tabular and sequence models.
+- Baseline models: `Random Forest` and `Isolation Forest`.
+- Sequence model: `LSTM-Autoencoder` in PyTorch.
+- Evaluation with `precision`, `recall`, `f1`, `ROC-AUC`, and `PR-AUC`.
+- Basic rule-based anomaly explanations.
 
-## 3. Структура проекта
+The next diploma stages are expected to add public datasets such as
+`CERT Insider Threat Dataset`, `CICIDS2017`, and `CSE-CIC-IDS2018`, but those
+datasets are intentionally not stored in this repository.
+
+## Project Structure
 
 ```text
-research_prototype/
-├── docs/
-│   ├── project_context.md
-│   └── PDF-материалы по НИР
-├── data/
-│   ├── raw/
-│   └── processed/
+argus/
 ├── notebooks/
 │   └── 01_exploration.ipynb
+├── results/
+│   ├── baseline_reference/
+│   ├── plots/
+│   ├── metrics_autoencoder.json
+│   ├── metrics_baseline.json
+│   └── metrics_summary.csv
 ├── src/
 │   ├── evaluate.py
 │   ├── explain_anomalies.py
@@ -29,35 +46,34 @@ research_prototype/
 │   ├── train_baseline.py
 │   ├── train_lstm_autoencoder.py
 │   └── utils.py
-├── results/
-│   └── plots/
 ├── requirements.txt
+├── run_all.sh
 └── README.md
 ```
 
-## 4. Команды запуска
+`data/` and most files in `results/` are generated locally and ignored by Git.
 
-### Установка зависимостей
+## Setup
 
 ```bash
 python3 -m pip install -r requirements.txt
 ```
 
-Для улучшенного terminal dashboard в финальном отчете `run_all.sh` можно дополнительно установить `rich`:
+Optional terminal formatting for the final pipeline report:
 
 ```bash
 python3 -m pip install rich
 ```
 
-### Быстрый запуск одним скриптом
+## Run Pipeline
 
-В корне проекта есть скрипт `run_all.sh`, который запускает весь pipeline одной командой:
+Run the full synthetic pipeline:
 
 ```bash
 bash run_all.sh
 ```
 
-Полезные варианты:
+Useful variants:
 
 ```bash
 bash run_all.sh --best-autoencoder
@@ -66,16 +82,7 @@ bash run_all.sh --with-stage10
 bash run_all.sh --skip-generate --with-stage10 --stage10-epochs 50
 ```
 
-Ключи:
-
-- `--skip-generate` пропускает генерацию синтетических логов, если `data/raw/synthetic_logs.csv` уже существует;
-- `--best-autoencoder` обучает лучший практический вариант LSTM-Autoencoder вместо дефолтной конфигурации;
-- `--with-stage10` запускает всю последовательность экспериментов этапа 10;
-- `--stage10-epochs 50` позволяет задать число эпох для эксперимента 6 в stage 10.
-
-После завершения pipeline скрипт печатает итоговый отчет прямо в терминал. По умолчанию отчет работает в текстовом режиме на базе `pandas`, а при наличии `rich` отображается как более наглядный mini-dashboard с таблицами метрик, лучшей моделью, деталями LSTM-Autoencoder, примерами аномалий и списком сгенерированных файлов.
-
-### Последовательный запуск этапов вручную
+Manual stage-by-stage run:
 
 ```bash
 python3 src/generate_data.py
@@ -86,11 +93,7 @@ python3 src/evaluate.py
 python3 src/explain_anomalies.py
 ```
 
-Если в системе настроен алиас `python`, допускается запуск тех же команд через `python`, однако для macOS в рамках данного прототипа рекомендуется использовать `python3`.
-
-### Лучшая практическая конфигурация автоэнкодера
-
-Если нужен не дефолтный, а лучший найденный практический вариант автоэнкодера, используйте:
+Current practical LSTM Autoencoder configuration:
 
 ```bash
 python3 src/train_lstm_autoencoder.py \
@@ -105,93 +108,45 @@ python3 src/train_lstm_autoencoder.py \
 python3 src/evaluate.py
 ```
 
-## 5. Какие данные используются
+## Synthetic Data
 
-В проекте используется синтетический датасет сетевых и пользовательских событий, формируемый скриптом `src/generate_data.py`. Датасет содержит нормальные события и несколько типов аномалий:
+The current pipeline uses synthetic network and user activity logs generated by
+`src/generate_data.py`. The generated dataset includes normal events and several
+anomaly types:
 
 - `brute_force_login`
 - `unusual_night_activity`
 - `data_exfiltration`
 - `unusual_ip_change`
 
-Сырые данные сохраняются в файл `data/raw/synthetic_logs.csv`.
+Generated raw and processed files are written under `data/` and are not tracked
+by Git.
 
-## 6. Какие модели реализованы
+## Artifacts Policy
 
-В прототипе реализованы три модели:
+The public repository keeps source code, dependencies, launch scripts, README,
+and a small reference snapshot of metrics/plots. It does not track:
 
-- `Isolation Forest` как unsupervised baseline;
-- `Random Forest` как supervised baseline;
-- `LSTM-Autoencoder` на PyTorch для реконструкции последовательностей событий.
+- local planning notes such as `future-development.md`;
+- practice reports, PDFs, DOCX/HTML exports, and local `docs/` materials;
+- generated datasets under `data/`;
+- model weights such as `*.pt`;
+- full prediction outputs and intermediate experiment sweeps;
+- temporary preview/build directories and dashboard screenshots.
 
-Отдельный модуль `src/explain_anomalies.py` формирует таблицу примеров аномалий с краткими интерпретируемыми причинами.
+If a future public dataset is required for an experiment, the repository should
+document how to obtain and prepare it instead of committing the dataset itself.
 
-## 7. Какие метрики считаются
+## Limitations
 
-Для оценки качества моделей рассчитываются следующие метрики:
+- Current results are based on synthetic data.
+- Strong metrics on synthetic data are not evidence of production readiness.
+- The LSTM Autoencoder is a research comparison point, not guaranteed to beat
+  tabular baselines on every scenario.
+- Public dataset support, richer feature engineering, explainability, and a
+  demonstration dashboard are planned diploma-stage work.
 
-- `precision`
-- `recall`
-- `f1`
-- `roc_auc`
-- `pr_auc`
-
-Дополнительно сохраняются матрицы ошибок и сравнительные графики по качеству моделей.
-
-## 8. Какие файлы появляются в results
-
-После полного запуска pipeline формируются следующие основные результаты:
-
-- `results/metrics_baseline.json`
-- `results/metrics_autoencoder.json`
-- `results/metrics_summary.csv`
-- `results/autoencoder_validation_thresholds.csv`
-- `results/anomaly_examples.csv`
-- `results/baseline_outputs.csv`
-- `results/autoencoder_outputs.csv`
-- `results/autoencoder_history.csv`
-- `results/autoencoder_metadata.json`
-- `results/lstm_autoencoder.pt`
-
-В каталоге `results/plots/` сохраняются графики:
-
-- `confusion_matrix_random_forest.png`
-- `confusion_matrix_isolation_forest.png`
-- `confusion_matrix_autoencoder.png`
-- `roc_curve_baseline.png`
-- `roc_curve_autoencoder.png`
-- `reconstruction_error_distribution.png`
-- `f1_score_comparison.png`
-- `roc_auc_comparison.png`
-- `pr_auc_comparison.png`
-
-Для подготовки раздела «Промежуточные результаты исследования» в отчете в первую очередь рекомендуется использовать:
-
-- `results/metrics_summary.csv`
-- `results/metrics_baseline.json`
-- `results/metrics_autoencoder.json`
-- `results/autoencoder_validation_thresholds.csv`
-- `results/anomaly_examples.csv`
-- графики из `results/plots/`
-
-## 9. Ограничения прототипа
-
-- используются синтетические данные, а не реальные журналы событий;
-- результаты являются предварительными и предназначены для промежуточного этапа НИР;
-- прототип не является промышленной IDS/UEBA-системой;
-- качество LSTM-Autoencoder на текущем этапе заметно уступает baseline-моделям;
-- необходима последующая проверка на открытых датасетах, например CICIDS2017, CSE-CIC-IDS2018 или CERT Insider Threat Dataset.
-
-## 10. Что можно улучшить на следующем этапе
-
-- использовать более реалистичные и разнообразные сценарии аномалий;
-- заменить простое integer-кодирование категориальных признаков на более информативные представления;
-- доработать формирование последовательностей и подбор длины окна;
-- улучшить архитектуру LSTM-Autoencoder и процедуру выбора threshold;
-- провести тестирование на открытых датасетах;
-- добавить сравнение с дополнительными моделями и более подробный анализ ошибок.
-
-## Используемые технологии
+## Technologies
 
 - Python
 - pandas
