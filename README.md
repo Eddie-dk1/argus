@@ -25,10 +25,21 @@ The next diploma stages are expected to add public datasets such as
 `CERT Insider Threat Dataset`, `CICIDS2017`, and `CSE-CIC-IDS2018`, but those
 datasets are intentionally not stored in this repository.
 
+## Documentation
+
+- [Architecture sketch](docs/architecture.md)
+- [Dataset notes](docs/datasets.md)
+- [Roadmap](docs/roadmap.md)
+- [Contributing](CONTRIBUTING.md)
+
 ## Project Structure
 
 ```text
 argus/
+├── docs/
+│   ├── architecture.md
+│   ├── datasets.md
+│   └── roadmap.md
 ├── notebooks/
 │   └── 01_exploration.ipynb
 ├── results/
@@ -155,3 +166,7 @@ document how to obtain and prepare it instead of committing the dataset itself.
 - matplotlib
 - PyTorch
 - tqdm
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE).

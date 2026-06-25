@@ -16,7 +16,9 @@ tmp_html/
 .vendor/
 
 # Practice/report exports and personal academic documents.
-docs/
+docs/*
+!docs/
+!docs/*.md
 *.docx
 *.pdf
 *.html
