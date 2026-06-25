@@ -19,6 +19,9 @@ tmp_html/
 docs/*
 !docs/
 !docs/*.md
+docs/final_report_*.md
+docs/practice_*.md
+docs/*stage_*.md
 *.docx
 *.pdf
 *.html
