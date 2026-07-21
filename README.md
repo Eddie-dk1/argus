@@ -1,172 +1,217 @@
 # Argus
 
-`Argus` is an academic research prototype for detecting anomalies in network
-activity and user behavior. The project is being prepared as the technical base
-for a diploma thesis: it compares classical machine-learning baselines with a
-sequence-based LSTM Autoencoder on synthetic security logs, and it is structured
-so that public datasets can be added later.
+Argus is an academic research prototype for anomaly detection in network
+activity and user behavior. It provides a reproducible synthetic benchmark that
+compares a supervised Random Forest, an unsupervised Isolation Forest, and a
+sequence-based LSTM Autoencoder on one exactly aligned evaluation cohort.
 
-The repository is not a production IDS/UEBA platform. It does not provide
-real-time ingestion, SIEM integrations, incident management, access control, or
-production monitoring. Its current purpose is reproducible experimentation:
-data generation, preprocessing, feature engineering, model training, metrics,
-plots, and short anomaly explanations.
+Argus is not a production IDS/UEBA platform. The current release is a research
+foundation: deterministic data generation, leakage-aware preprocessing,
+validation-only threshold selection, experiment manifests, metrics, plots, and
+short anomaly explanations.
 
-## Current Scope
+## Release Status
 
-- Synthetic log generation for controlled anomaly scenarios.
-- Preprocessing and feature preparation for tabular and sequence models.
-- Baseline models: `Random Forest` and `Isolation Forest`.
-- Sequence model: `LSTM-Autoencoder` in PyTorch.
-- Evaluation with `precision`, `recall`, `f1`, `ROC-AUC`, and `PR-AUC`.
-- Basic rule-based anomaly explanations.
+`argus-v0.2.0` stabilizes the synthetic pipeline and prepares the repository for
+public data without downloading the 200+ GiB dataset collection.
 
-The next diploma stages are expected to add public datasets such as
-`CERT Insider Threat Dataset`, `CICIDS2017`, and `CSE-CIC-IDS2018`, but those
-datasets are intentionally not stored in this repository.
+- Synthetic scenario: implemented, tested, and reproducible from a committed
+  config.
+- CERT r4.2, CICIDS2017, CSE-CIC-IDS2018: researched and represented by storage,
+  schema-inspection, and feature contracts; no real data is bundled or claimed
+  as evaluated.
+- Next active-data milestone: CERT r4.2 after suitable external storage is
+  available.
 
-## Documentation
+## Quick Start
 
-- [Architecture sketch](docs/architecture.md)
-- [Dataset notes](docs/datasets.md)
-- [Roadmap](docs/roadmap.md)
-- [Contributing](CONTRIBUTING.md)
+Create an isolated Python environment and install the dependencies:
 
-## Project Structure
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install --upgrade pip
+python3 -m pip install -r requirements.txt
+```
+
+Run the complete reference pipeline:
+
+```bash
+./run_all.sh
+```
+
+Run a faster tabular-only check:
+
+```bash
+./run_all.sh --skip-autoencoder
+```
+
+Reuse an existing generated raw file:
+
+```bash
+./run_all.sh --skip-generate
+```
+
+The default experiment is fully described by
+[`configs/synthetic_v0.2.json`](configs/synthetic_v0.2.json). Command-line model
+overrides are intended for declared experiments, but the test split must not be
+used to choose them.
+
+## Reference Result
+
+The v0.2 reference run uses 30,000 synthetic events, a chronological `60/20/20`
+split, seed `42`, and a common test cohort of 5,600 sequence endpoints. That
+cohort contains 361 anomalous events (6.45%). Thresholds and LSTM epoch are
+selected on validation only.
+
+| Model | Precision | Recall | F1 | PR-AUC | ROC-AUC | FPR |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Random Forest | 1.000 | 0.889 | 0.941 | 1.000 | 1.000 | 0.000 |
+| Isolation Forest | 0.393 | 0.496 | 0.439 | 0.403 | 0.886 | 0.053 |
+| LSTM Autoencoder | 0.443 | 0.399 | 0.420 | 0.351 | 0.831 | 0.035 |
+
+These numbers are a controlled engineering result, not evidence of production
+performance. In particular, the near-perfect Random Forest ranking indicates
+that the generated anomaly families remain strongly separable. Multi-seed
+stability and public-dataset validation are later research stages.
+
+The compact release snapshot is in
+[`results/baseline_reference/`](results/baseline_reference/), including config,
+data hash, split/feature manifests, validation/test metrics, timing, and feature
+importance.
+
+## What the Pipeline Does
+
+```text
+committed config
+      |
+      v
+deterministic synthetic events
+      |
+      v
+chronological split before fitting features
+      |
+      +---------------------------+
+      |                           |
+      v                           v
+tabular endpoint rows       per-user sequences
+      |                           |
+      v                           v
+Random/Isolation Forest     LSTM Autoencoder
+      |                           |
+      +-------------+-------------+
+                    v
+validation threshold -> one common test cohort
+                    v
+metrics, timing, errors, plots, explanations
+```
+
+The generator models four anomaly families:
+
+- `brute_force_login`;
+- `unusual_night_activity`;
+- `data_exfiltration`;
+- `unusual_ip_change`.
+
+Features are causal: rolling values use earlier events only. Encoders, normal
+profiles, and scalers are fitted on train only. Raw user/IP identifiers and
+labels are provenance, not default model inputs.
+
+## External Dataset Storage
+
+Synthetic data defaults to the ignored repository `data/` directory. Public
+datasets should be kept on an external SSD by setting an existing mount path:
+
+```bash
+export ARGUS_DATA_ROOT="/Volumes/ArgusData/argus-data"
+python3 src/check_data_storage.py \
+  --scenario cert_r4_2 \
+  --required-gib 100 \
+  --create-scenario-directories
+```
+
+If `ARGUS_DATA_ROOT` is set but the volume is missing, Argus fails instead of
+silently creating a large internal-drive copy. The exact storage and capacity
+procedure is in the [data storage policy](docs/data-storage.md).
+
+After files are acquired from their publishers, inspect a raw directory before
+writing preprocessing code:
+
+```bash
+python3 src/inspect_dataset.py --scenario cert_r4_2
+python3 src/inspect_dataset.py --scenario cicids2017
+python3 src/inspect_dataset.py --scenario cse_cic_ids2018
+```
+
+The CERT contract is explicitly provisional until it is reconciled with the
+README bundled in the chosen r4.2 release.
+
+## Reproducibility Rules
+
+- Split raw records before fitting preprocessing state.
+- Use validation for features, hyperparameters, early stopping, and thresholds.
+- Evaluate test only after the configuration is frozen.
+- Compare models only on rows with identical `user_id`, `timestamp`, and target.
+- Report precision, recall, F1, PR-AUC, ROC-AUC, FPR, support, prevalence, and
+  timing.
+- Keep data hashes, resolved config, environment, split report, feature
+  manifest, threshold search, errors, and plots per run.
+- Treat synthetic metrics and explanations as limited evidence.
+
+The complete rules are in the [experimental protocol](docs/experimental-protocol.md).
+Old test-informed autoencoder sweep scripts were removed in v0.2; future search
+spaces must be bounded in a committed config and selected on validation only.
+
+## Tests
+
+Run the unit and contract checks:
+
+```bash
+PYTHONPATH=src python3 -m unittest discover -s tests -v
+bash -n run_all.sh
+```
+
+The tests cover generator determinism, split invariants, target leakage,
+unknown categories, endpoint sequence labels, storage failure behavior, schema
+aliases, malformed input, and chunked CSV loading.
+
+## Project Layout
 
 ```text
 argus/
-├── docs/
-│   ├── architecture.md
-│   ├── datasets.md
-│   └── roadmap.md
-├── notebooks/
-│   └── 01_exploration.ipynb
+├── configs/                 # versioned experiment configurations
+├── docs/                    # protocol, datasets, storage, features, literature
 ├── results/
-│   ├── baseline_reference/
-│   ├── plots/
-│   ├── metrics_autoencoder.json
-│   ├── metrics_baseline.json
-│   └── metrics_summary.csv
+│   ├── baseline_reference/  # compact v0.2 reproducibility snapshot
+│   └── plots/               # selected reference plots
 ├── src/
-│   ├── evaluate.py
-│   ├── explain_anomalies.py
-│   ├── features.py
+│   ├── datasets/            # scenario contracts, inspection, chunked loading
+│   ├── data_paths.py        # ARGUS_DATA_ROOT resolution
 │   ├── generate_data.py
 │   ├── preprocessing.py
 │   ├── train_baseline.py
 │   ├── train_lstm_autoencoder.py
-│   └── utils.py
-├── requirements.txt
+│   ├── evaluate.py
+│   └── experiment_tracking.py
+├── tests/                   # unit tests and tiny synthetic schema fixtures
 ├── run_all.sh
-└── README.md
+└── requirements.txt
 ```
 
-`data/` and most files in `results/` are generated locally and ignored by Git.
+Generated datasets, weights, full predictions, and timestamped experiment runs
+are ignored. They can be rebuilt from code, config, and publisher data.
 
-## Setup
+## Documentation
 
-```bash
-python3 -m pip install -r requirements.txt
-```
-
-Optional terminal formatting for the final pipeline report:
-
-```bash
-python3 -m pip install rich
-```
-
-## Run Pipeline
-
-Run the full synthetic pipeline:
-
-```bash
-bash run_all.sh
-```
-
-Useful variants:
-
-```bash
-bash run_all.sh --best-autoencoder
-bash run_all.sh --skip-generate --best-autoencoder
-bash run_all.sh --with-stage10
-bash run_all.sh --skip-generate --with-stage10 --stage10-epochs 50
-```
-
-Manual stage-by-stage run:
-
-```bash
-python3 src/generate_data.py
-python3 src/preprocessing.py
-python3 src/train_baseline.py
-python3 src/train_lstm_autoencoder.py
-python3 src/evaluate.py
-python3 src/explain_anomalies.py
-```
-
-Current practical LSTM Autoencoder configuration:
-
-```bash
-python3 src/train_lstm_autoencoder.py \
-  --sequence-length 5 \
-  --hidden-size 32 \
-  --epochs 10 \
-  --batch-size 128 \
-  --learning-rate 0.001 \
-  --threshold-percentiles 85 90 92 95 \
-  --early-stopping-patience 0 \
-  --selection-metric f1
-python3 src/evaluate.py
-```
-
-## Synthetic Data
-
-The current pipeline uses synthetic network and user activity logs generated by
-`src/generate_data.py`. The generated dataset includes normal events and several
-anomaly types:
-
-- `brute_force_login`
-- `unusual_night_activity`
-- `data_exfiltration`
-- `unusual_ip_change`
-
-Generated raw and processed files are written under `data/` and are not tracked
-by Git.
-
-## Artifacts Policy
-
-The public repository keeps source code, dependencies, launch scripts, README,
-and a small reference snapshot of metrics/plots. It does not track:
-
-- local planning notes such as `future-development.md`;
-- practice reports, PDFs, DOCX/HTML exports, and local `docs/` materials;
-- generated datasets under `data/`;
-- model weights such as `*.pt`;
-- full prediction outputs and intermediate experiment sweeps;
-- temporary preview/build directories and dashboard screenshots.
-
-If a future public dataset is required for an experiment, the repository should
-document how to obtain and prepare it instead of committing the dataset itself.
-
-## Limitations
-
-- Current results are based on synthetic data.
-- Strong metrics on synthetic data are not evidence of production readiness.
-- The LSTM Autoencoder is a research comparison point, not guaranteed to beat
-  tabular baselines on every scenario.
-- Public dataset support, richer feature engineering, explainability, and a
-  demonstration dashboard are planned diploma-stage work.
-
-## Technologies
-
-- Python
-- pandas
-- numpy
-- scikit-learn
-- matplotlib
-- PyTorch
-- tqdm
+- [Architecture](docs/architecture.md)
+- [Dataset research](docs/datasets.md)
+- [Data storage policy](docs/data-storage.md)
+- [Experimental protocol](docs/experimental-protocol.md)
+- [Scenario feature map](docs/features.md)
+- [Working literature review](docs/literature-review.md)
+- [Roadmap](docs/roadmap.md)
+- [Contributing](CONTRIBUTING.md)
 
 ## License
 
-This project is licensed under the MIT License. See [LICENSE](LICENSE).
+Argus is licensed under the [MIT License](LICENSE).

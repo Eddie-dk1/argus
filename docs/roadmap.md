@@ -1,65 +1,91 @@
 # Roadmap
 
-Argus is planned as a staged academic research prototype rather than a
-production IDS/UEBA platform.
+Argus is developed as a staged academic prototype. A stage is complete only
+when its data/config, code, tests, metrics, limitations, and release notes agree.
 
-## argus-v0.1.0
+## Completed
 
-Repository rebranding and cleanup:
+### argus-v0.1.0 — public foundation
 
-- rename and position the project as `Argus`;
-- keep a clean public README;
-- remove personal practice documents and generated artifacts from Git;
-- define the data and artifact policy;
-- keep a small reproducibility reference snapshot.
+- project rebranding and honest academic positioning;
+- repository cleanup, MIT license, contribution guide;
+- initial architecture, dataset notes, roadmap, and reference artifacts.
 
-## argus-v0.2.0
+### argus-v0.2.0 — reproducible synthetic baseline
 
-Stabilize the current synthetic pipeline:
+- deterministic, more realistic synthetic generator;
+- single chronological split before fitted preprocessing;
+- causal scenario-specific features and identifier/target exclusions;
+- Random Forest, Isolation Forest, and LSTM Autoencoder compared on the exact
+  same endpoint cohort;
+- validation-only epoch and threshold selection;
+- metrics including PR-AUC, FPR, support, prevalence, and timing;
+- structured run artifacts, hashes, manifests, error analysis, and reference
+  snapshot;
+- official-source research for CERT r4.2, CICIDS2017, and CSE-CIC-IDS2018;
+- external SSD policy, capacity preflight, schema inspector, chunked loader, and
+  tiny contract fixtures;
+- feature map, experimental protocol, and working literature review.
 
-- confirm reproducible synthetic data generation;
-- refine baseline experiment outputs;
-- document the experiment protocol;
-- keep the run flow simple and repeatable.
+## Prepared, but Intentionally Not Claimed as Implemented
 
-## argus-v0.3.0
+The repository has public-dataset contracts but contains no real public data,
+preprocessed public features, trained public-data models, or public-data model
+metrics. Those claims begin only after the files are acquired and their bundled
+documentation is validated.
 
-Add the behavioral public dataset scenario:
+## Next Sequential Milestones
 
-- prepare `CERT Insider Threat Dataset` ingestion;
-- build behavioral feature groups;
-- compare tabular baselines and the sequence model.
+### argus-v0.3.0 — CERT r4.2 behavioral scenario
 
-## argus-v0.4.0
+1. Acquire the selected official r4.2 release to external storage and freeze its
+   file/checksum manifest.
+2. Reconcile the provisional contract with the bundled README and answer keys.
+3. Implement user-group `60/20/20` splits without user overlap.
+4. Build user-day and ordered behavioral features without label history.
+5. Train/evaluate tabular baselines, then adapt the sequence model.
+6. Repeat the selected configuration across seeds `7, 21, 42, 84, 168`.
+7. Analyze false positives/negatives and publish a compact release snapshot.
 
-Add the first network IDS public dataset scenario:
+### argus-v0.4.0 — CICIDS2017 network scenario
 
-- prepare `CICIDS2017` ingestion;
-- build flow/session-level features;
-- compare supervised, unsupervised, and sequence-based approaches.
+- accept and validate the publisher CSV manifest;
+- implement the fixed capture-day split;
+- document any corrections prompted by the troubleshooting literature;
+- build flow-specific features and compare the model families fairly;
+- report attack-family recall and capture-day shift.
 
-## argus-v0.5.0
+### argus-v0.5.0 — CSE-CIC-IDS2018 and transfer
 
-Add the second network IDS validation scenario:
+- freeze source-day splits before tuning;
+- reproduce an independent within-dataset result;
+- test the compatible CICIDS2017 feature subset and frozen threshold;
+- document what does and does not transfer.
 
-- prepare `CSE-CIC-IDS2018` ingestion;
-- compare transferability of features and thresholds;
-- document differences from the `CICIDS2017` scenario.
+### argus-v0.6.0 — final modeling and explainability
 
-## argus-v0.6.0
+- add one justified boosting baseline after the data scenarios stabilize;
+- use bounded, committed, validation-only hyperparameter searches;
+- select final configurations using multi-seed evidence;
+- add SHAP for the selected tabular model and reconstruction-based temporal
+  explanations for the sequence model;
+- perform per-family and cross-dataset error analysis.
 
-Finalize model selection and explainability:
+### argus-v1.0.0 — diploma integration
 
-- run moderate hyperparameter tuning;
-- select final model configurations;
-- analyze false positives and false negatives;
-- improve anomaly explanations.
+- freeze final scenarios, metrics, tables, and limitations;
+- build a limited Streamlit demonstration over prepared artifacts;
+- prepare the reproducibility guide and defense demo;
+- publish the final selected release without datasets or private artifacts.
 
-## argus-v1.0.0
+## Release Gate
 
-Integrate the main diploma components:
+Every release must pass:
 
-- stable scenarios;
-- final comparison tables and plots;
-- explainability examples;
-- a limited demonstration dashboard.
+- unit and schema-contract tests;
+- shell/Python syntax checks;
+- documented reference command from a clean environment;
+- `git diff --check` and review of ignored/untracked files;
+- confirmation that no dataset, personal path, secret, or model weight is
+  staged;
+- release notes stating supported scenarios and known limitations.
