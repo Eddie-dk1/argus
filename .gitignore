@@ -19,6 +19,8 @@ tmp_html/
 docs/*
 !docs/
 !docs/*.md
+!docs/releases/
+!docs/releases/*.md
 docs/final_report_*.md
 docs/practice_*.md
 docs/*stage_*.md
@@ -29,10 +31,9 @@ src/build_practice_*.py
 src/build_stage*_report.py
 src/build_stage*_presentation.py
 
-# Generated datasets. Public datasets should be downloaded locally and
-# documented in README or dedicated dataset notes instead of committed.
-data/raw/
-data/processed/
+# Generated datasets. Public datasets should be downloaded locally or stored on
+# an external volume through ARGUS_DATA_ROOT, never committed.
+data/
 
 # Generated model artifacts and experiment outputs.
 *.pt
@@ -40,6 +41,7 @@ data/processed/
 results/*.csv
 results/*.json
 results/plots/*.png
+results/experiments/
 
 # Keep a small public reference snapshot.
 !results/metrics_baseline.json
@@ -54,6 +56,7 @@ results/plots/*.png
 !results/plots/confusion_matrix_isolation_forest.png
 !results/plots/confusion_matrix_random_forest.png
 !results/plots/f1_score_comparison.png
+!results/plots/false_positive_rate_comparison.png
 !results/plots/pr_auc_comparison.png
 !results/plots/reconstruction_error_distribution.png
 !results/plots/roc_auc_comparison.png

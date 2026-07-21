@@ -1,0 +1,46 @@
+{
+  "scenario": "synthetic",
+  "config_version": "0.2.0",
+  "seed": 42,
+  "generator": {
+    "n_events": 30000,
+    "n_users": 100,
+    "n_days": 60,
+    "anomaly_ratio": 0.065,
+    "start_timestamp": "2025-01-01 00:00:00"
+  },
+  "split": {
+    "strategy": "chronological",
+    "train_fraction": 0.6,
+    "validation_fraction": 0.2,
+    "test_fraction": 0.2
+  },
+  "features": {
+    "rolling_window_events": 10,
+    "sequence_length": 5
+  },
+  "baseline": {
+    "random_forest": {
+      "n_estimators": 200,
+      "max_depth": 10,
+      "class_weight": "balanced"
+    },
+    "isolation_forest": {
+      "n_estimators": 200
+    },
+    "threshold_percentiles": [70, 75, 80, 82, 84, 85, 86, 88, 90, 92, 94, 95, 96, 97, 98, 99]
+  },
+  "lstm_autoencoder": {
+    "hidden_size": 32,
+    "epochs": 10,
+    "batch_size": 128,
+    "learning_rate": 0.001,
+    "threshold_percentiles": [80, 82, 84, 85, 86, 88, 90, 92, 94, 95, 96, 97, 98, 99],
+    "early_stopping_patience": 5,
+    "selection_metric": "f1"
+  },
+  "timing": {
+    "warmup_runs": 1,
+    "measured_runs": 5
+  }
+}

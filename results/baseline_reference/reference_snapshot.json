@@ -1,34 +1,151 @@
 {
-  "baseline_metrics": {
-    "random_forest": {
-      "f1": 0.9957228400342173,
-      "roc_auc": 0.9999937027388008
-    },
-    "isolation_forest": {
-      "f1": 0.5717932354818124,
-      "roc_auc": 0.9471151941740177
+  "release": "argus-v0.2.0",
+  "created_at_utc": "2026-07-21T15:56:25.168229+00:00",
+  "scenario": "synthetic",
+  "config_version": "0.2.0",
+  "protocol_version": "1",
+  "evaluation_cohort": "sequence_endpoints",
+  "config_sha256": "01cf914a9ca6d14f7a5659cbc4675f2a9a259e0cfbfa7d134d7d7a5f06f1ed7c",
+  "data_manifest": {
+    "path": "data/synthetic/raw/synthetic_logs.csv",
+    "size_bytes": 4975911,
+    "sha256": "2059ed41ae5aa6b5dc6b0b0d854b25552e55e9a9d28f6bed59b13f4c8fa24f60"
+  },
+  "environment": {
+    "python": "3.14.3 (v3.14.3:323c59a5e34, Feb  3 2026, 11:41:37) [Clang 16.0.0 (clang-1600.0.26.6)]",
+    "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "processor": "arm",
+    "dependencies": {
+      "numpy": "2.4.4",
+      "pandas": "3.0.2",
+      "scikit-learn": "1.8.0",
+      "matplotlib": "3.10.8",
+      "torch": "2.12.0",
+      "tqdm": "4.67.3"
     }
   },
-  "lstm_autoencoder_reference": {
-    "precision": 0.6046128500823723,
-    "recall": 0.08828482078421938,
-    "f1": 0.15407220822837953,
-    "roc_auc": 0.5071585180570353,
-    "sequence_length": 10,
-    "hidden_size": 16,
-    "epochs": 5,
-    "threshold_percentile": 95,
-    "feature_columns": [
-      "bytes_sent",
-      "bytes_received",
-      "hour",
-      "is_weekend",
-      "user_id_encoded",
-      "source_ip_encoded",
-      "destination_ip_encoded",
-      "event_type_encoded",
-      "login_status_encoded",
-      "protocol_encoded"
-    ]
-  }
+  "validation_metrics": [
+    {
+      "model": "Random Forest",
+      "split": "validation",
+      "precision": 1.0,
+      "recall": 0.896,
+      "f1": 0.9451476793248944,
+      "roc_auc": 1.0,
+      "pr_auc": 1.0,
+      "false_positive_rate": 0.0,
+      "accuracy": 0.9930357142857142,
+      "normal_support": 5225,
+      "anomaly_support": 375,
+      "anomaly_prevalence": 0.0669642857142857,
+      "threshold": 0.9242729400158488,
+      "threshold_percentile": 94.0
+    },
+    {
+      "model": "Isolation Forest",
+      "split": "validation",
+      "precision": 0.4129464285714285,
+      "recall": 0.4933333333333333,
+      "f1": 0.4495747266099635,
+      "roc_auc": 0.882001658692185,
+      "pr_auc": 0.3979599300266186,
+      "false_positive_rate": 0.050334928229665,
+      "accuracy": 0.9191071428571428,
+      "normal_support": 5225,
+      "anomaly_support": 375,
+      "anomaly_prevalence": 0.0669642857142857,
+      "threshold": 0.5417345850895442,
+      "threshold_percentile": 92.0
+    },
+    {
+      "model": "LSTM-Autoencoder",
+      "split": "validation",
+      "precision": 0.4821428571428571,
+      "recall": 0.432,
+      "f1": 0.4556962025316455,
+      "roc_auc": 0.841433620414673,
+      "pr_auc": 0.3835057417912846,
+      "false_positive_rate": 0.0333014354066985,
+      "accuracy": 0.9308928571428572,
+      "normal_support": 5225,
+      "anomaly_support": 375,
+      "anomaly_prevalence": 0.0669642857142857,
+      "threshold": 0.2343548947572707,
+      "threshold_percentile": 94.0
+    }
+  ],
+  "test_metrics": [
+    {
+      "model": "Random Forest",
+      "split": "test",
+      "precision": 1.0,
+      "recall": 0.889196675900277,
+      "f1": 0.9413489736070382,
+      "roc_auc": 1.0,
+      "pr_auc": 1.0,
+      "false_positive_rate": 0.0,
+      "accuracy": 0.9928571428571428,
+      "normal_support": 5239,
+      "anomaly_support": 361,
+      "anomaly_prevalence": 0.0644642857142857,
+      "threshold": 0.9242729400158488,
+      "threshold_percentile": 94.0
+    },
+    {
+      "model": "Isolation Forest",
+      "split": "test",
+      "precision": 0.3934065934065934,
+      "recall": 0.4958448753462603,
+      "f1": 0.4387254901960784,
+      "roc_auc": 0.8858592518607777,
+      "pr_auc": 0.4027454255075139,
+      "false_positive_rate": 0.0526818095056308,
+      "accuracy": 0.9182142857142858,
+      "normal_support": 5239,
+      "anomaly_support": 361,
+      "anomaly_prevalence": 0.0644642857142857,
+      "threshold": 0.5417345850895442,
+      "threshold_percentile": 92.0
+    },
+    {
+      "model": "LSTM-Autoencoder",
+      "split": "test",
+      "precision": 0.4430769230769231,
+      "recall": 0.3988919667590028,
+      "f1": 0.4198250728862974,
+      "roc_auc": 0.8313167967285631,
+      "pr_auc": 0.3506179573651545,
+      "false_positive_rate": 0.0345485779728955,
+      "accuracy": 0.9289285714285714,
+      "normal_support": 5239,
+      "anomaly_support": 361,
+      "anomaly_prevalence": 0.0644642857142857,
+      "threshold": 0.2343548947572707,
+      "threshold_percentile": 94.0
+    }
+  ],
+  "files": [
+    "autoencoder_metadata.json",
+    "baseline_training_summary.json",
+    "evaluation_summary.json",
+    "feature_columns.json",
+    "feature_config.json",
+    "feature_importance_random_forest.csv",
+    "feature_manifest.json",
+    "metrics_autoencoder.json",
+    "metrics_baseline.json",
+    "metrics_summary.csv",
+    "metrics_validation_summary.csv",
+    "split_report.json",
+    "synthetic_config.json",
+    "timing_autoencoder.json",
+    "timing_baseline.json"
+  ],
+  "limitations": [
+    "Synthetic data is a controlled engineering benchmark, not production evidence.",
+    "Near-perfect Random Forest ranking reflects strong generator separability.",
+    "Public dataset scenarios have not been downloaded or evaluated in this release.",
+    "Final multi-seed model stability remains a later diploma-stage task."
+  ]
 }

@@ -1,0 +1,32 @@
+{
+  "random_forest": {
+    "training_seconds": 0.294583082999452,
+    "warmup_runs": 1,
+    "measured_runs": 5,
+    "durations_seconds": [
+      0.03239525000390131,
+      0.02814841600775253,
+      0.02425454100011848,
+      0.024562958991737105,
+      0.023811083010514267
+    ],
+    "median_seconds": 0.024562958991737105,
+    "records": 5600,
+    "records_per_second": 227985.56158823622
+  },
+  "isolation_forest": {
+    "training_seconds": 0.136344165992341,
+    "warmup_runs": 1,
+    "measured_runs": 5,
+    "durations_seconds": [
+      0.04121979100455064,
+      0.04021625001041684,
+      0.040419917000690475,
+      0.04083679099858273,
+      0.040362500003539026
+    ],
+    "median_seconds": 0.040419917000690475,
+    "records": 5600,
+    "records_per_second": 138545.5591089991
+  }
+}

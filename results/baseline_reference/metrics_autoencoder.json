@@ -1,26 +1,71 @@
 {
+  "protocol_version": "1",
+  "split_policy": "synthetic-chronological-60-20-20",
+  "evaluation_cohort": "sequence_endpoints",
   "lstm_autoencoder": {
-    "precision": 0.6046128500823723,
-    "recall": 0.08828482078421938,
-    "f1": 0.15407220822837953,
-    "f1_score": 0.15407220822837953,
-    "roc_auc": 0.5071585180570353,
-    "confusion_matrix": [
-      [
-        4063,
-        240
+    "threshold": 0.23435489475727075,
+    "threshold_percentile": 94.0,
+    "threshold_calibration": "labeled-validation",
+    "validation": {
+      "precision": 0.48214285714285715,
+      "recall": 0.432,
+      "f1_score": 0.45569620253164556,
+      "accuracy": 0.9308928571428572,
+      "false_positive_rate": 0.03330143540669857,
+      "confusion_matrix": [
+        [
+          5051,
+          174
+        ],
+        [
+          213,
+          162
+        ]
       ],
-      [
-        3790,
-        367
-      ]
-    ],
-    "threshold": 177765.84375,
-    "threshold_percentile": 95,
-    "epochs": 5,
-    "hidden_size": 16,
-    "batch_size": 128,
-    "learning_rate": 0.001,
+      "support": {
+        "normal": 5225,
+        "anomaly": 375,
+        "total": 5600
+      },
+      "anomaly_prevalence": 0.06696428571428571,
+      "roc_auc": 0.841433620414673,
+      "pr_auc": 0.3835057417912846
+    },
+    "test": {
+      "precision": 0.4430769230769231,
+      "recall": 0.3988919667590028,
+      "f1_score": 0.4198250728862974,
+      "accuracy": 0.9289285714285714,
+      "false_positive_rate": 0.03454857797289559,
+      "confusion_matrix": [
+        [
+          5058,
+          181
+        ],
+        [
+          217,
+          144
+        ]
+      ],
+      "support": {
+        "normal": 5239,
+        "anomaly": 361,
+        "total": 5600
+      },
+      "anomaly_prevalence": 0.06446428571428571,
+      "roc_auc": 0.8313167967285631,
+      "pr_auc": 0.3506179573651545
+    },
+    "hyperparameters": {
+      "sequence_length": 5,
+      "hidden_size": 32,
+      "epochs_requested": 10,
+      "batch_size": 128,
+      "learning_rate": 0.001,
+      "early_stopping_patience": 5,
+      "selection_metric": "f1"
+    },
+    "best_epoch": 10,
     "device": "cpu"
   }
 }

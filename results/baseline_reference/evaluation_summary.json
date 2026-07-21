@@ -1,0 +1,12 @@
+{
+  "protocol_version": "1",
+  "evaluation_cohort": "sequence_endpoints",
+  "evaluation_cohort_rows": 5600,
+  "evaluation_cohort_verified_equal": true,
+  "selection_rule": "validation F1, recall, then lower false-positive rate",
+  "selected_model_by_validation": "Random Forest",
+  "selected_model_validation_f1": 0.9451476793248945,
+  "descriptive_best_test_model": "Random Forest",
+  "descriptive_best_test_f1": 0.9413489736070382,
+  "warning": "The descriptive test ranking is reported after evaluation and must not be used to retune the current release."
+}

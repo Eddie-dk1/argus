@@ -1,0 +1,65 @@
+{
+  "scenario": "synthetic",
+  "strategy": "chronological",
+  "fractions": {
+    "train": 0.6,
+    "validation": 0.2,
+    "test": 0.2
+  },
+  "splits": {
+    "train": {
+      "rows": 18000,
+      "normal": 16829,
+      "anomaly": 1171,
+      "anomaly_prevalence": 0.06505555555555556,
+      "start_timestamp": "2025-01-01T00:51:04",
+      "end_timestamp": "2025-02-05T14:03:58",
+      "users": 100,
+      "anomaly_types": {
+        "brute_force_login": 293,
+        "data_exfiltration": 292,
+        "normal": 16829,
+        "unusual_ip_change": 292,
+        "unusual_night_activity": 294
+      }
+    },
+    "validation": {
+      "rows": 6000,
+      "normal": 5602,
+      "anomaly": 398,
+      "anomaly_prevalence": 0.06633333333333333,
+      "start_timestamp": "2025-02-05T14:06:37",
+      "end_timestamp": "2025-02-18T09:56:29",
+      "users": 100,
+      "anomaly_types": {
+        "brute_force_login": 98,
+        "data_exfiltration": 96,
+        "normal": 5602,
+        "unusual_ip_change": 97,
+        "unusual_night_activity": 107
+      }
+    },
+    "test": {
+      "rows": 6000,
+      "normal": 5619,
+      "anomaly": 381,
+      "anomaly_prevalence": 0.0635,
+      "start_timestamp": "2025-02-18T09:59:28",
+      "end_timestamp": "2025-03-01T23:44:41",
+      "users": 100,
+      "anomaly_types": {
+        "brute_force_login": 98,
+        "data_exfiltration": 98,
+        "normal": 5619,
+        "unusual_ip_change": 97,
+        "unusual_night_activity": 88
+      }
+    }
+  },
+  "entity_overlap": {
+    "train_validation_users": 100,
+    "train_test_users": 100,
+    "policy": "user overlap allowed; chronological periods do not overlap"
+  },
+  "validated": true
+}

@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import argparse
 import os
+import time
 from pathlib import Path
+from typing import Any
 
 os.environ.setdefault(
     "MPLCONFIGDIR",
@@ -11,67 +14,46 @@ os.environ.setdefault(
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 from sklearn.ensemble import IsolationForest
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import ConfusionMatrixDisplay
 from sklearn.metrics import RocCurveDisplay
 from sklearn.metrics import confusion_matrix
-from sklearn.model_selection import train_test_split
 
+from experiment_tracking import create_run_directory
+from experiment_tracking import save_run_results
+from utils import DEFAULT_CONFIG_PATH
 from utils import PLOTS_DIR
 from utils import PROCESSED_DIR
+from utils import RAW_DIR
 from utils import RESULTS_DIR
 from utils import compute_classification_metrics
 from utils import ensure_directories
+from utils import load_experiment_config
+from utils import load_json
+from utils import measure_inference
 from utils import save_json
+from utils import select_best_threshold
 from utils import set_seed
 
 
-RANDOM_STATE = 42
-TEST_SIZE = 0.3
-
-META_COLUMNS = [
-    "timestamp",
-    "user_id",
-    "label",
-    "anomaly_type",
-    "split",
-]
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Train synthetic tabular baselines.")
+    parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG_PATH)
+    return parser.parse_args()
 
 
-def get_feature_columns(data_frame: pd.DataFrame) -> list[str]:
-    return [column for column in data_frame.columns if column not in META_COLUMNS]
-
-
-def build_metrics_block(
-    y_true: pd.Series,
-    y_pred: pd.Series,
-    scores: pd.Series,
-) -> dict:
-    metrics = compute_classification_metrics(y_true, y_pred, scores)
-    confusion = confusion_matrix(y_true, y_pred)
-
-    return {
-        "precision": metrics["precision"],
-        "recall": metrics["recall"],
-        "f1": metrics["f1_score"],
-        "f1_score": metrics["f1_score"],
-        "roc_auc": metrics["roc_auc"],
-        "pr_auc": metrics["pr_auc"],
-        "confusion_matrix": confusion.tolist(),
-    }
-
-
-def plot_confusion_matrix(
-    y_true: pd.Series,
-    y_pred: pd.Series,
+def plot_confusion(
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
     title: str,
     output_path: Path,
 ) -> None:
     figure, axis = plt.subplots(figsize=(5, 4))
     display = ConfusionMatrixDisplay(
-        confusion_matrix=confusion_matrix(y_true, y_pred),
+        confusion_matrix=confusion_matrix(y_true, y_pred, labels=[0, 1]),
         display_labels=["Normal", "Anomaly"],
     )
     display.plot(ax=axis, colorbar=False)
@@ -81,177 +63,319 @@ def plot_confusion_matrix(
     plt.close(figure)
 
 
-def plot_roc_curve(
-    y_true: pd.Series,
-    rf_scores: pd.Series,
-    if_scores: pd.Series,
+def plot_roc(
+    y_true: np.ndarray,
+    random_forest_scores: np.ndarray,
+    isolation_forest_scores: np.ndarray,
     output_path: Path,
 ) -> None:
     figure, axis = plt.subplots(figsize=(7, 5))
-
     RocCurveDisplay.from_predictions(
         y_true,
-        rf_scores,
+        random_forest_scores,
         name="Random Forest",
         ax=axis,
     )
     RocCurveDisplay.from_predictions(
         y_true,
-        if_scores,
+        isolation_forest_scores,
         name="Isolation Forest",
         ax=axis,
     )
-
-    axis.set_title("ROC Curve: Baseline Models")
+    axis.set_title("ROC Curve: Synthetic Baselines")
     figure.tight_layout()
     figure.savefig(output_path, dpi=150)
     plt.close(figure)
 
 
-def main() -> None:
-    ensure_directories()
-    set_seed(RANDOM_STATE)
+def flatten_candidates(model: str, candidates: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    keys = (
+        "percentile",
+        "threshold",
+        "precision",
+        "recall",
+        "f1_score",
+        "roc_auc",
+        "pr_auc",
+        "false_positive_rate",
+        "accuracy",
+        "anomaly_prevalence",
+    )
+    return [{"model": model, **{key: row.get(key) for key in keys}} for row in candidates]
 
-    baseline_dataset_path = PROCESSED_DIR / "baseline_dataset.csv"
-    if not baseline_dataset_path.exists():
+
+def build_error_analysis(
+    meta: pd.DataFrame,
+    y_true: np.ndarray,
+    predictions: np.ndarray,
+    scores: np.ndarray,
+) -> pd.DataFrame:
+    result = meta.reset_index(drop=True).copy()
+    result["y_true"] = y_true
+    result["prediction"] = predictions
+    result["score"] = scores
+    result["error_type"] = np.select(
+        [
+            (result["y_true"] == 0) & (result["prediction"] == 1),
+            (result["y_true"] == 1) & (result["prediction"] == 0),
+        ],
+        ["false_positive", "false_negative"],
+        default="correct",
+    )
+    return result[result["error_type"] != "correct"].reset_index(drop=True)
+
+
+def main() -> None:
+    args = parse_args()
+    config = load_experiment_config(args.config)
+    seed = int(config["seed"])
+    baseline_config = config["baseline"]
+    timing_config = config["timing"]
+    ensure_directories()
+    set_seed(seed)
+
+    dataset_path = PROCESSED_DIR / "baseline_dataset.csv"
+    if not dataset_path.exists():
         raise FileNotFoundError(
             "Baseline dataset not found. Run `python3 src/preprocessing.py` first."
         )
+    frame = pd.read_csv(dataset_path)
+    feature_columns = list(load_json(PROCESSED_DIR / "feature_columns.json"))
+    feature_config = load_json(PROCESSED_DIR / "feature_config.json")
+    sequence_length = int(feature_config["sequence_length"])
+    missing = sorted(set(feature_columns) - set(frame.columns))
+    if missing:
+        raise ValueError("Processed feature columns are missing: " + ", ".join(missing))
 
-    baseline_frame = pd.read_csv(baseline_dataset_path)
-    feature_columns = get_feature_columns(baseline_frame)
+    split_frames = {
+        name: frame[frame["split"] == name].reset_index(drop=True)
+        for name in ("train", "validation", "test")
+    }
+    if any(split.empty for split in split_frames.values()):
+        raise ValueError("Processed dataset must contain train, validation, and test rows")
 
-    X = baseline_frame[feature_columns]
-    y = baseline_frame["label"].astype(int)
-    meta = baseline_frame[["timestamp", "user_id", "anomaly_type"]]
+    X_train = split_frames["train"][feature_columns]
+    y_train = split_frames["train"]["label"].astype(int).to_numpy()
+    evaluation_frames: dict[str, pd.DataFrame] = {}
+    for split_name in ("validation", "test"):
+        split_frame = split_frames[split_name]
+        endpoint_mask = (
+            split_frame.sort_values(["user_id", "timestamp"])
+            .groupby("user_id", sort=False)
+            .cumcount()
+            .ge(sequence_length - 1)
+        )
+        evaluation_frames[split_name] = split_frame.loc[endpoint_mask].reset_index(drop=True)
 
-    X_train, X_test, y_train, y_test, meta_train, meta_test = train_test_split(
-        X,
-        y,
-        meta,
-        test_size=TEST_SIZE,
-        random_state=RANDOM_STATE,
-        stratify=y,
-    )
+    X_validation = evaluation_frames["validation"][feature_columns]
+    y_validation = evaluation_frames["validation"]["label"].astype(int).to_numpy()
+    X_test = evaluation_frames["test"][feature_columns]
+    y_test = evaluation_frames["test"]["label"].astype(int).to_numpy()
 
-    anomaly_ratio = float(y_train.mean())
-
+    rf_config = baseline_config["random_forest"]
     random_forest = RandomForestClassifier(
-        n_estimators=200,
-        max_depth=10,
-        class_weight="balanced",
-        random_state=RANDOM_STATE,
+        n_estimators=int(rf_config["n_estimators"]),
+        max_depth=int(rf_config["max_depth"]),
+        class_weight=str(rf_config["class_weight"]),
+        random_state=seed,
         n_jobs=-1,
     )
+    started = time.perf_counter()
     random_forest.fit(X_train, y_train)
-    rf_scores = random_forest.predict_proba(X_test)[:, 1]
-    rf_predictions = (rf_scores >= 0.5).astype(int)
+    rf_training_seconds = time.perf_counter() - started
+    rf_validation_scores = random_forest.predict_proba(X_validation)[:, 1]
+    rf_threshold, rf_percentile, rf_validation_metrics, rf_candidates = select_best_threshold(
+        rf_validation_scores,
+        y_validation,
+        baseline_config["threshold_percentiles"],
+    )
+    rf_test_scores, rf_timing = measure_inference(
+        lambda: random_forest.predict_proba(X_test)[:, 1],
+        record_count=len(X_test),
+        warmup_runs=int(timing_config["warmup_runs"]),
+        measured_runs=int(timing_config["measured_runs"]),
+    )
+    rf_test_predictions = (rf_test_scores >= rf_threshold).astype(int)
+    rf_test_metrics = compute_classification_metrics(
+        y_test,
+        rf_test_predictions,
+        rf_test_scores,
+    )
 
+    isolation_config = baseline_config["isolation_forest"]
     isolation_forest = IsolationForest(
-        n_estimators=200,
-        contamination=anomaly_ratio,
-        random_state=RANDOM_STATE,
+        n_estimators=int(isolation_config["n_estimators"]),
+        contamination="auto",
+        random_state=seed,
+        n_jobs=-1,
     )
     X_train_normal = X_train[y_train == 0]
+    started = time.perf_counter()
     isolation_forest.fit(X_train_normal)
+    if_training_seconds = time.perf_counter() - started
+    if_validation_scores = -isolation_forest.score_samples(X_validation)
+    if_threshold, if_percentile, if_validation_metrics, if_candidates = select_best_threshold(
+        if_validation_scores,
+        y_validation,
+        baseline_config["threshold_percentiles"],
+    )
+    if_test_scores, if_timing = measure_inference(
+        lambda: -isolation_forest.score_samples(X_test),
+        record_count=len(X_test),
+        warmup_runs=int(timing_config["warmup_runs"]),
+        measured_runs=int(timing_config["measured_runs"]),
+    )
+    if_test_predictions = (if_test_scores >= if_threshold).astype(int)
+    if_test_metrics = compute_classification_metrics(
+        y_test,
+        if_test_predictions,
+        if_test_scores,
+    )
 
-    train_normal_scores = -isolation_forest.score_samples(X_train_normal)
-    if_threshold = float(pd.Series(train_normal_scores).quantile(1 - anomaly_ratio))
-
-    if_scores = -isolation_forest.score_samples(X_test)
-    if_predictions = (if_scores >= if_threshold).astype(int)
-
-    rf_metrics = build_metrics_block(y_test, rf_predictions, rf_scores)
-    if_metrics = build_metrics_block(y_test, if_predictions, if_scores)
+    rf_plot = PLOTS_DIR / "confusion_matrix_random_forest.png"
+    if_plot = PLOTS_DIR / "confusion_matrix_isolation_forest.png"
+    roc_plot = PLOTS_DIR / "roc_curve_baseline.png"
+    plot_confusion(y_test, rf_test_predictions, "Random Forest: Test", rf_plot)
+    plot_confusion(y_test, if_test_predictions, "Isolation Forest: Test", if_plot)
+    plot_roc(y_test, rf_test_scores, if_test_scores, roc_plot)
 
     metrics_payload = {
-        "isolation_forest": {
-            **if_metrics,
-            "contamination": anomaly_ratio,
-            "threshold": if_threshold,
-        },
+        "protocol_version": "1",
+        "split_policy": "synthetic-chronological-60-20-20",
+        "evaluation_cohort": "sequence_endpoints",
+        "sequence_length": sequence_length,
         "random_forest": {
-            **rf_metrics,
-            "n_estimators": 200,
-            "max_depth": 10,
+            "threshold": rf_threshold,
+            "threshold_percentile": rf_percentile,
+            "threshold_calibration": "labeled-validation",
+            "validation": rf_validation_metrics,
+            "test": rf_test_metrics,
+            "hyperparameters": rf_config,
+        },
+        "isolation_forest": {
+            "threshold": if_threshold,
+            "threshold_percentile": if_percentile,
+            "threshold_calibration": "labeled-validation",
+            "validation": if_validation_metrics,
+            "test": if_test_metrics,
+            "hyperparameters": isolation_config,
+            "fit_rows": int(len(X_train_normal)),
         },
     }
-    metrics_path = RESULTS_DIR / "metrics_baseline.json"
-    save_json(metrics_payload, metrics_path)
+    save_json(metrics_payload, RESULTS_DIR / "metrics_baseline.json")
 
-    outputs = pd.DataFrame(
+    meta_columns = [
+        "timestamp",
+        "user_id",
+        "source_ip",
+        "destination_ip",
+        "event_type",
+        "anomaly_type",
+        "bytes_sent",
+        "session_duration",
+        "failed_logins",
+        "distinct_destinations",
+        "privileged_action",
+        "login_status",
+        "location",
+    ]
+    test_meta = evaluation_frames["test"][meta_columns]
+    outputs = test_meta.copy()
+    outputs["y_true"] = y_test
+    outputs["rf_score"] = rf_test_scores
+    outputs["rf_pred"] = rf_test_predictions
+    outputs["iforest_score"] = if_test_scores
+    outputs["iforest_pred"] = if_test_predictions
+    outputs.to_csv(RESULTS_DIR / "baseline_outputs.csv", index=False)
+
+    importance = pd.DataFrame(
         {
-            "timestamp": meta_test["timestamp"].to_numpy(),
-            "user_id": meta_test["user_id"].to_numpy(),
-            "anomaly_type": meta_test["anomaly_type"].to_numpy(),
-            "y_true": y_test.to_numpy(),
-            "rf_score": rf_scores,
-            "rf_pred": rf_predictions,
-            "iforest_score": if_scores,
-            "iforest_pred": if_predictions,
+            "feature": feature_columns,
+            "importance": random_forest.feature_importances_,
         }
-    )
-    outputs_path = RESULTS_DIR / "baseline_outputs.csv"
-    outputs.to_csv(outputs_path, index=False)
+    ).sort_values("importance", ascending=False)
+    importance.to_csv(RESULTS_DIR / "feature_importance_random_forest.csv", index=False)
 
-    summary_path = RESULTS_DIR / "baseline_training_summary.json"
+    threshold_rows = [
+        *flatten_candidates("Random Forest", rf_candidates),
+        *flatten_candidates("Isolation Forest", if_candidates),
+    ]
+    pd.DataFrame(threshold_rows).to_csv(
+        RESULTS_DIR / "baseline_validation_thresholds.csv",
+        index=False,
+    )
+    timing_payload = {
+        "random_forest": {"training_seconds": rf_training_seconds, **rf_timing},
+        "isolation_forest": {"training_seconds": if_training_seconds, **if_timing},
+    }
+    save_json(timing_payload, RESULTS_DIR / "timing_baseline.json")
     save_json(
         {
-            "feature_columns": feature_columns,
-            "train_size": int(len(X_train)),
-            "test_size": int(len(X_test)),
-            "anomaly_ratio_train": anomaly_ratio,
-            "random_state": RANDOM_STATE,
-            "test_size_fraction": TEST_SIZE,
+            "seed": seed,
+            "feature_count": len(feature_columns),
+            "split_sizes": {name: len(value) for name, value in split_frames.items()},
+            "evaluation_cohort": "sequence_endpoints",
+            "sequence_length": sequence_length,
+            "validation_evaluation_rows": len(evaluation_frames["validation"]),
+            "test_evaluation_rows": len(evaluation_frames["test"]),
+            "threshold_selection": "validation-percentile-search",
+            "threshold_percentiles": baseline_config["threshold_percentiles"],
+            "random_forest_threshold": rf_threshold,
+            "isolation_forest_threshold": if_threshold,
         },
-        summary_path,
+        RESULTS_DIR / "baseline_training_summary.json",
     )
 
-    rf_confusion_path = PLOTS_DIR / "confusion_matrix_random_forest.png"
-    if_confusion_path = PLOTS_DIR / "confusion_matrix_isolation_forest.png"
-    roc_path = PLOTS_DIR / "roc_curve_baseline.png"
+    run_inputs = {
+        "scenario": "synthetic",
+        "config_version": config["config_version"],
+        "seed": seed,
+        "split_policy": metrics_payload["split_policy"],
+    }
+    for model_name, model_config, validation_metrics, test_metrics, candidates, timing, errors, plots in (
+        (
+            "random_forest",
+            {**run_inputs, "model": rf_config, "threshold_percentiles": baseline_config["threshold_percentiles"]},
+            rf_validation_metrics,
+            rf_test_metrics,
+            rf_candidates,
+            timing_payload["random_forest"],
+            build_error_analysis(test_meta, y_test, rf_test_predictions, rf_test_scores),
+            (rf_plot, roc_plot),
+        ),
+        (
+            "isolation_forest",
+            {**run_inputs, "model": isolation_config, "threshold_percentiles": baseline_config["threshold_percentiles"]},
+            if_validation_metrics,
+            if_test_metrics,
+            if_candidates,
+            timing_payload["isolation_forest"],
+            build_error_analysis(test_meta, y_test, if_test_predictions, if_test_scores),
+            (if_plot, roc_plot),
+        ),
+    ):
+        run_dir, _ = create_run_directory(
+            scenario="synthetic",
+            model=model_name,
+            resolved_config=model_config,
+            seed=seed,
+            data_path=RAW_DIR / "synthetic_logs.csv",
+            split_report_path=PROCESSED_DIR / "split_report.json",
+            feature_manifest_path=PROCESSED_DIR / "feature_manifest.json",
+        )
+        save_run_results(
+            run_dir,
+            validation_metrics=validation_metrics,
+            test_metrics=test_metrics,
+            threshold_candidates=candidates,
+            timing=timing,
+            error_analysis=errors,
+            plot_paths=plots,
+        )
 
-    plot_confusion_matrix(
-        y_test,
-        rf_predictions,
-        "Confusion Matrix: Random Forest",
-        rf_confusion_path,
-    )
-    plot_confusion_matrix(
-        y_test,
-        if_predictions,
-        "Confusion Matrix: Isolation Forest",
-        if_confusion_path,
-    )
-    plot_roc_curve(y_test, rf_scores, if_scores, roc_path)
-
-    metrics_table = pd.DataFrame(
-        [
-            {
-                "model": "random_forest",
-                "precision": rf_metrics["precision"],
-                "recall": rf_metrics["recall"],
-                "f1": rf_metrics["f1"],
-                "roc_auc": rf_metrics["roc_auc"],
-                "pr_auc": rf_metrics["pr_auc"],
-            },
-            {
-                "model": "isolation_forest",
-                "precision": if_metrics["precision"],
-                "recall": if_metrics["recall"],
-                "f1": if_metrics["f1"],
-                "roc_auc": if_metrics["roc_auc"],
-                "pr_auc": if_metrics["pr_auc"],
-            },
-        ]
-    )
-
-    print(f"Saved baseline metrics to: {metrics_path}")
-    print(f"Saved Random Forest confusion matrix to: {rf_confusion_path}")
-    print(f"Saved Isolation Forest confusion matrix to: {if_confusion_path}")
-    print(f"Saved baseline ROC curve to: {roc_path}")
-    print("Baseline metrics:")
-    print(metrics_table.to_string(index=False))
+    print(f"Saved baseline metrics to: {RESULTS_DIR / 'metrics_baseline.json'}")
+    print(f"Random Forest test F1: {rf_test_metrics['f1_score']:.4f}")
+    print(f"Isolation Forest test F1: {if_test_metrics['f1_score']:.4f}")
 
 
 if __name__ == "__main__":
