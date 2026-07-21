@@ -1,0 +1,3 @@
+Flow Duration,Tot Fwd Pkts,Tot Bwd Pkts,Flow Byts/s,Flow Pkts/s,Label
+Flow Duration,Tot Fwd Pkts,Tot Bwd Pkts,Flow Byts/s,Flow Pkts/s,Label
+1000,10,8,Infinity,18.0,Benign
