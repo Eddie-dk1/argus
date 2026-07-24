@@ -11,6 +11,7 @@ experiment.txt
 
 # Local preview/build/vendor artifacts.
 streamlitdashboardpreview.png
+argusdashboardpreview*.png
 qlout/
 tmp_html/
 .vendor/
