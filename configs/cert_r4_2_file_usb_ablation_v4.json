@@ -1,0 +1,83 @@
+{
+  "plan_id": "cert_r4_2_file_usb_ablation_v4",
+  "fixed_on": "2026-11-14",
+  "stage": "3 of 5: generic file/USB deviations and adaptation stress check",
+  "daily_preparation_id": "cert_days_2ccb63d841e14a84940cc01a16c1a9f2",
+  "daily_manifest_sha256": "784b9271685251aecf2124955a4f1469263825cb12368220cb00d45d0bcb86e6",
+  "previous_cv_id": "cert_group_cv_5a14d42129dd44c08deb8580964117ad",
+  "previous_cv_manifest_sha256": "c266573af080ee0cfe2e4ca83e7aa553d49b2ad9f4d13eb0ad8166380c300575",
+  "configs": {
+    "causal_all_v3": {
+      "path": "configs/cert_r4_2_causal_history_v3.json",
+      "sha256": "3a997e2f43a752964e7c29d5b7161626076e5e06c463fc1d15be4e9d7ad5d8c2"
+    },
+    "file_usb_rolling_v4": {
+      "path": "configs/cert_r4_2_file_usb_rolling_v4.json",
+      "sha256": "cbe426716ced9685161134ab6728f0495cb02c8a949ddc8de0d2b9f0bfae75c5"
+    },
+    "file_usb_frozen_v4": {
+      "path": "configs/cert_r4_2_file_usb_frozen_v4.json",
+      "sha256": "99bec1c150a3afd109f9f5bd3b831514cef8ca9287e8bc22b3e915a439cce066"
+    }
+  },
+  "models": [
+    "random_forest",
+    "isolation_forest",
+    "lstm_autoencoder"
+  ],
+  "cv": {
+    "outer_folds": 3,
+    "outer_seed": 142,
+    "inner_calibration_folds": 5,
+    "inner_calibration_seed_base": 242,
+    "model_seed": 42
+  },
+  "feature_definition": {
+    "raw_columns": [
+      "file_events",
+      "connect_count",
+      "device_paired_seconds"
+    ],
+    "added_columns": [
+      "file_events_personal_deviation",
+      "connect_count_personal_deviation",
+      "device_paired_seconds_personal_deviation",
+      "file_usb_profile_missing"
+    ],
+    "minimum_past_active_days": 5,
+    "rolling_calendar_days": 30,
+    "frozen_initial_active_days": 5,
+    "log1p_iqr_floor": 1.0,
+    "deviation_clip": 20.0,
+    "fallback": "all inner-fit active days, including zero counts; labels unused",
+    "update": "emit before observe; all roles; no label-based history cleaning"
+  },
+  "objective": "inner_calibration_f1",
+  "hypothesis": "Generic log-volume deviations from same-account past may improve detection beyond v3 total-event history; a frozen early profile may resist normalization of prolonged shifts, with possible extra false alarms. Improvement is not assumed.",
+  "comparisons": [
+    "causal_all_v3 -> file_usb_rolling_v4: add three generic deviations and a profile-fallback indicator only",
+    "file_usb_rolling_v4 -> file_usb_frozen_v4: change only the file/USB reference to the first five past active days, frozen thereafter",
+    "causal_all_v3 -> file_usb_frozen_v4: total effect, not isolated reference attribution"
+  ],
+  "population": "original primary train only; preserve exact step-2 groups, endpoints, roles and labels; exclude original primary validation/test before features",
+  "training": "RF labeled inner fit; IF background inner-fit days; LSTM all-background inner-fit windows; feature history always includes all observed past days regardless of labels",
+  "unchanged": "all common 71 features/scaling, sequence length 5, hidden size32, all other model hyperparameters, seed42, threshold grid, inner-calibration F1/recall/lowerFPR/lowerthreshold and earliest tied epoch, five-day mean MSE score",
+  "reporting": [
+    "all 27 assessments, nine frozen v3 candidates reused and 18 new fits; no discarded failures or folds",
+    "within-fold PR/ROC AUC, precision, recall, F1, confusion, FPR, paired deltas and macro fold mean/sample SD/min/max",
+    "pooled OOF decisions and scenario recall; no pooled cross-fold rank metrics",
+    "after all inference only: positive and background endpoint bins with 0, 1-4, >=5 previous observable-positive days in [date-30,date); raw deviations and recall/FP fractions; bins are not incident-onset or causal estimates",
+    "exact saved inputs, scores, thresholds, checkpoints, memberships, hashes; independent numerical audit of every new daily deviation before fitting"
+  ],
+  "budget": {
+    "candidates": 27,
+    "new_fits": 18,
+    "reused_candidates": 9,
+    "max_lstm_epochs": 10,
+    "cpu_threads": 1,
+    "search_trials": 0,
+    "minimum_free_gib": 15
+  },
+  "limits": "Exploratory hypothesis influenced by prior exposed development/final diagnostics; same reused outer folds, one model seed and overlapping training pools. No independent confirmation, no selection or extra trials from outer metrics in this series. Frozen first5 can include positive behavior and become stale; never clean it with labels.",
+  "test_policy": "CERT test was consumed on 2026-11-13. No prepared test reads, transformations, scoring or threshold selection here. The source CSV/context is co-located and verified before filtering primary train."
+}

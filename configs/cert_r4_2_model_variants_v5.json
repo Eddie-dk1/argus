@@ -1,0 +1,127 @@
+{
+  "plan_id": "cert_r4_2_endpoint_and_boosting_v5",
+  "fixed_on": "2026-11-14",
+  "stage": "4 of 5: score alignment and justified model comparison",
+  "daily_preparation_id": "cert_days_2ccb63d841e14a84940cc01a16c1a9f2",
+  "daily_manifest_sha256": "784b9271685251aecf2124955a4f1469263825cb12368220cb00d45d0bcb86e6",
+  "sources": {
+    "group_cv_v3": {
+      "id": "cert_group_cv_5a14d42129dd44c08deb8580964117ad",
+      "manifest_sha256": "c266573af080ee0cfe2e4ca83e7aa553d49b2ad9f4d13eb0ad8166380c300575"
+    },
+    "file_usb_v4": {
+      "id": "cert_file_usb_4920f98f5845472e8ae82796ae587727",
+      "manifest_sha256": "d0e59337d44521dca679a8f4771e185c69098dac5ac4e5cb7275f07055f1427b"
+    }
+  },
+  "configs": {
+    "global_only_v2": {
+      "baseline": {
+        "path": "configs/cert_r4_2_global_only_v2.json",
+        "sha256": "e64909e02de4ebcee73f4f13452032d5c6ba3c79c77a8004fcc8ef5bfbb716ba"
+      },
+      "lstm_endpoint": {
+        "path": "configs/cert_r4_2_global_only_v2_lstm_endpoint_v5.json",
+        "sha256": "e1fa1bb721375f9812dfcf46f5624234e23771a8ea70600bb1949362ba57a975"
+      },
+      "hist_gradient_boosting": {
+        "path": "configs/cert_r4_2_global_only_v2_hist_gradient_boosting_v5.json",
+        "sha256": "5e87dff6c1daa26d5568a928d0cf3a5a5cc27e5d5cdeb2847da0bcf25930de37"
+      }
+    },
+    "causal_all_v3": {
+      "baseline": {
+        "path": "configs/cert_r4_2_causal_history_v3.json",
+        "sha256": "3a997e2f43a752964e7c29d5b7161626076e5e06c463fc1d15be4e9d7ad5d8c2"
+      },
+      "lstm_endpoint": {
+        "path": "configs/cert_r4_2_causal_all_v3_lstm_endpoint_v5.json",
+        "sha256": "6a5f32b0622c70ab50b190f403fadb603ea66cfd2ec152871e22526827ad0123"
+      },
+      "hist_gradient_boosting": {
+        "path": "configs/cert_r4_2_causal_all_v3_hist_gradient_boosting_v5.json",
+        "sha256": "2a21208a2c17ce4da5095311d1b8d2400f6af29bab6cb54632f1b99203d2fc40"
+      }
+    },
+    "file_usb_rolling_v4": {
+      "baseline": {
+        "path": "configs/cert_r4_2_file_usb_rolling_v4.json",
+        "sha256": "cbe426716ced9685161134ab6728f0495cb02c8a949ddc8de0d2b9f0bfae75c5"
+      },
+      "lstm_endpoint": {
+        "path": "configs/cert_r4_2_file_usb_rolling_v4_lstm_endpoint_v5.json",
+        "sha256": "3d64b09e45b8527c5a452adb3d79935a353ef392bcfda85beaf4d78ea0ba26ab"
+      },
+      "hist_gradient_boosting": {
+        "path": "configs/cert_r4_2_file_usb_rolling_v4_hist_gradient_boosting_v5.json",
+        "sha256": "96578cbd0bb65ff7139f0e742a5be6e9db487dae6f14e92196e36f5e4f7962e1"
+      }
+    },
+    "file_usb_frozen_v4": {
+      "baseline": {
+        "path": "configs/cert_r4_2_file_usb_frozen_v4.json",
+        "sha256": "99bec1c150a3afd109f9f5bd3b831514cef8ca9287e8bc22b3e915a439cce066"
+      },
+      "lstm_endpoint": {
+        "path": "configs/cert_r4_2_file_usb_frozen_v4_lstm_endpoint_v5.json",
+        "sha256": "cec98b1036d32b66bef7f16b5ee4728efc7e8e75b4f8d6af17b24e3943448361"
+      },
+      "hist_gradient_boosting": {
+        "path": "configs/cert_r4_2_file_usb_frozen_v4_hist_gradient_boosting_v5.json",
+        "sha256": "3734809d8745fab8b2663f4fa8700ebdbb8e875206576fab19aa3afdb85f25a3"
+      }
+    }
+  },
+  "methods": [
+    "random_forest",
+    "isolation_forest",
+    "lstm_autoencoder",
+    "lstm_endpoint",
+    "hist_gradient_boosting"
+  ],
+  "cv": {
+    "outer_folds": 3,
+    "outer_seed": 142,
+    "inner_calibration_folds": 5,
+    "inner_calibration_seed_base": 242,
+    "model_seed": 42
+  },
+  "boosting": {
+    "loss": "log_loss",
+    "learning_rate": 0.05,
+    "max_iter": 200,
+    "max_leaf_nodes": 15,
+    "max_depth": 4,
+    "min_samples_leaf": 20,
+    "l2_regularization": 1.0,
+    "max_bins": 255,
+    "early_stopping": false,
+    "class_weight": "balanced"
+  },
+  "objective": "inner_calibration_f1",
+  "hypotheses": {
+    "lstm_endpoint": "Endpoint label may be diluted by five-day mean error. Preserve full-window reconstruction loss, architecture, optimizer, inputs and background-window fit. Score last day only; select epoch/threshold on inner calibration using the same ties.",
+    "hist_gradient_boosting": "RF signal on daily tabular aggregates and persistently weak reconstruction separation justify one supervised shallow boosting baseline; this is not proof that LSTMs cannot work. Compare directly with supervised RF, not as equal-supervision replacement for unsupervised LSTM/IF."
+  },
+  "population": "original primary train only; reuse all four feature policies and exact step-2/3 preparations, groups, roles, window membership, endpoint IDs and targets; no new preprocessing fit or cohort changes",
+  "unchanged": "seed42, outer142, inner242+fold, labels, all-background LSTM windows, optimization loss mean MSE over all five days/features, hidden32, Adam0.001, batch128, max10epochs/patience5, existing percentile grids and F1/recall/lowerFPR/lowerthreshold/earliest-tied-epoch rules",
+  "reporting": [
+    "all 24 new candidates and 36 frozen controls, all folds including regressions/zero recall",
+    "within-fold PR/ROC AUC, precision/recall/F1/FPR/confusion/support; macro mean/sampleSD/min/max; paired endpoint-vs-window and HGB-vs-RF differences within the same feature policy",
+    "complete pooled OOF decisions and scenario recall; no pooling of scores from separately fitted folds for PR/ROC AUC",
+    "timing, exact saved numerical inputs/windows/scores/decisions/checkpoints/thresholds, source/config/environment hashes and assessment/test read guards",
+    "no automatic winner/default replacement or extra trials selected from outer metrics"
+  ],
+  "budget": {
+    "new_fits": 24,
+    "reused_candidates": 36,
+    "assessments": 60,
+    "max_lstm_epochs": 10,
+    "max_boosting_iterations": 200,
+    "cpu_threads": 1,
+    "search_trials": 0,
+    "minimum_free_gib": 15
+  },
+  "limits": "Exploratory repeated development comparisons after previous validation/final exposure; one model seed and dependent folds; no independent confirmation. HGB/RF use positive labels in model fitting, LSTM/IF do not. A poor tested LSTM-AE is not proof that every recurrent model is unsuitable.",
+  "test_policy": "No original primary validation/test scoring or prepared-test reads. Daily source is co-located and verified before filtering primary train. Previous consumed CERT test does not become independent."
+}

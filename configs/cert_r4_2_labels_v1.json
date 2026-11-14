@@ -1,0 +1,26 @@
+{
+  "policy_id": "cert_r4_2_observable_account_day_v1",
+  "dataset": "cert_r4_2",
+  "event_target": "exact_official_observable_membership",
+  "event_key": ["source", "id"],
+  "require_complete_row_match": true,
+  "account_field": "user",
+  "day_target": "any_positive_event_for_logged_account",
+  "day_boundary": "publisher_naive_calendar_date",
+  "day_population": "active_account_days_only",
+  "prediction_available": "end_of_day",
+  "unlisted_event_label": 0,
+  "unlisted_event_meaning": "not_listed_in_official_observables_not_proven_benign",
+  "incident_interval_expansion": false,
+  "cross_account_rule": "retain_logged_account_and_incident_user_separately",
+  "split_unit": "connected_accounts_within_official_incident",
+  "split_fractions": [0.6, 0.2, 0.2],
+  "split_seed": 42,
+  "split_allocation_status": "implemented",
+  "split_algorithm": "cert_group_greedy_v1",
+  "two_group_scenario_policy": "train_and_test_only",
+  "forbidden_model_inputs": [
+    "label", "incident_id", "incident_user", "scenario", "incident_start",
+    "incident_end", "split_group", "observable_membership", "user", "event_id"
+  ]
+}

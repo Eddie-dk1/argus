@@ -1,0 +1,44 @@
+{
+  "plan_id": "cert_r4_2_causal_history_development_v3",
+  "fixed_on": "2026-11-14",
+  "stage": "1 of 5: implementation and development preparation only",
+  "daily_preparation_id": "cert_days_2ccb63d841e14a84940cc01a16c1a9f2",
+  "daily_manifest_sha256": "784b9271685251aecf2124955a4f1469263825cb12368220cb00d45d0bcb86e6",
+  "configs": {
+    "global_only_v2": {
+      "path": "configs/cert_r4_2_global_only_v2.json",
+      "sha256": "e64909e02de4ebcee73f4f13452032d5c6ba3c79c77a8004fcc8ef5bfbb716ba"
+    },
+    "causal_all_v3": {
+      "path": "configs/cert_r4_2_causal_history_v3.json",
+      "sha256": "3a997e2f43a752964e7c29d5b7161626076e5e06c463fc1d15be4e9d7ad5d8c2"
+    }
+  },
+  "hypothesis": "Equal access to same-account past observations in all roles may restore useful personal context without the v1 availability shift. Detection improvement is not assumed.",
+  "changed_factor": "History availability only; retain 61 base inputs, 10 history inputs, labels, account groups, endpoint cohort, sequence length and model settings.",
+  "personal_history": {
+    "update_order": "emit features, then observe current day; every role; all labels",
+    "rolling_calendar_days": [7, 30],
+    "minimum_personal_profile_days": 5,
+    "vocabulary": "expanding earlier same-account observations, with frozen train fallback on first day",
+    "global_state": "all original train only; inner fit only in future group CV",
+    "prediction_scope": "end of active account-day; offline account transfer, not temporal forecasting"
+  },
+  "population": "original primary train and validation only; test excluded before feature building",
+  "target": "endpoint_account_day_observable",
+  "selection_objective_for_next_comparison": "unchanged inner calibration F1, recall, lower FPR, lower threshold; earliest tied LSTM epoch",
+  "model_training_runs": 0,
+  "hyperparameter_search_trials": 0,
+  "minimum_free_gib": 5,
+  "checks": [
+    "split-role invariance with frozen global state",
+    "future-observation invariance of earlier features and frozen-model scores",
+    "labels and attribution cannot alter feature state",
+    "train-only global state and scaler",
+    "rolling cutoffs, gaps, cold start and expanding vocabulary lineage",
+    "identical ordered items, target, base inputs and coverage across v2/v3",
+    "no model fitting, threshold selection, test transformation or scoring"
+  ],
+  "next_step": "Separate bounded paired group-CV plan for RF, IF and LSTM; refit feature state per inner fit; calibrate only on inner validation. Existing outer folds are reused development evidence, not an untouched test.",
+  "test_policy": "CERT test was consumed on 2026-11-13. No new model can claim independent confirmation from it. A new directory or reshuffle does not create an independent holdout."
+}

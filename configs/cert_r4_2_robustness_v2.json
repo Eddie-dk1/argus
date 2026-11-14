@@ -1,0 +1,66 @@
+{
+  "plan_id": "cert_r4_2_history_robustness_v2",
+  "fixed_on": "2026-11-13",
+  "primary_preparation_id": "cert_preparation_8488758ce2e94ed8b57bbb9d10dc651a",
+  "primary_preparation_manifest_sha256": "2dfc59f4dfb78a0e1b3605c14313d8b733c833e59fee54e2ed21439ec20e9dd6",
+  "daily_preparation_id": "cert_days_2ccb63d841e14a84940cc01a16c1a9f2",
+  "configs": {
+    "causal_train_v1": {
+      "path": "configs/cert_r4_2_experiment_v1.json",
+      "sha256": "22d4177c38fdf316b9c7a06e37d143b1676866edce9a1ac6dbd9de1ce33be80b"
+    },
+    "global_only_v2": {
+      "path": "configs/cert_r4_2_global_only_v2.json",
+      "sha256": "e64909e02de4ebcee73f4f13452032d5c6ba3c79c77a8004fcc8ef5bfbb716ba"
+    }
+  },
+  "hypothesis": "Using the same frozen global reference policy in fit and held-out removes artificial history-availability reconstruction error; detection improvement is not assumed.",
+  "changed_factor": "History reference availability only. No labels, splits, day cohorts, architecture, hyperparameters, threshold grid or selection objective change.",
+  "seeds": [
+    7,
+    21,
+    42,
+    84,
+    168
+  ],
+  "models": [
+    "random_forest",
+    "isolation_forest",
+    "lstm_autoencoder"
+  ],
+  "reuse_seed42": {
+    "random_forest": "cert_benchmark_step1_e095d32539ed4b34b6dd59046973b0ea/candidate_9c566ec4e2a449db8efbd81ee924e399",
+    "isolation_forest": "cert_benchmark_step1_e095d32539ed4b34b6dd59046973b0ea/candidate_f6675fbb409e410d9d714b4c3bad2f2b",
+    "lstm_autoencoder": "cert_benchmark_step2_55ebdd6e4ab0488ebcd36bd905e64199/candidate_5b1eeaa920ce4cb4991ee66ae327bbb5"
+  },
+  "primary_runs": 30,
+  "new_primary_runs": 27,
+  "cv": {
+    "enabled": true,
+    "population": "original primary train only",
+    "model": "lstm_autoencoder",
+    "policies": [
+      "causal_train_v1",
+      "global_only_v2"
+    ],
+    "outer_folds": 3,
+    "outer_seed": 142,
+    "inner_calibration_folds": 5,
+    "inner_calibration_seed_base": 242,
+    "model_seed": 42,
+    "new_candidates": 6,
+    "fitting": "refit every profile/vocabulary/scaler and model on inner fit only; epoch/threshold on inner calibration only; frozen evaluation on outer assessment"
+  },
+  "threshold_selection": "validation F1, recall, lower FPR, lower threshold; LSTM epoch F1/recall/FPR with earliest exact tie",
+  "comparison": "Report both policies and every model seed; mean/sample-std/min/max and paired seed differences. No seed selection or deletion of bad runs.",
+  "cv_interpretation": "Three dependent outer folds test sensitivity to unseen account groups; scenario 3 has only one primary-train group and cannot support all sides of every fold.",
+  "test_policy": "No real test scoring, prediction inspection, threshold calibration or model selection in step 3. Final remains a separate step.",
+  "budget": {
+    "new_candidates": 33,
+    "max_lstm_epochs": 10,
+    "cpu_threads": 1,
+    "minimum_free_gib": 20,
+    "search_trials": 0
+  },
+  "freeze": "Persist immutable record binding every completed full candidate, checkpoint/config hash and threshold before any real final evaluation."
+}
