@@ -98,7 +98,7 @@ SCENARIO_CONTRACTS: dict[str, ScenarioContract] = {
     ),
     "cert_r4_2": ScenarioContract(
         name="cert_r4_2",
-        schema_status="provisional-until-publisher-readme-validation",
+        schema_status="publisher-r4.2-core-validated",
         sources=(
             SourceContract(
                 name="logon",
@@ -116,7 +116,7 @@ SCENARIO_CONTRACTS: dict[str, ScenarioContract] = {
                 columns=(
                     *CERT_COMMON_COLUMNS,
                     column("filename", "file"),
-                    column("activity"),
+                    column("activity", required=False),
                 ),
             ),
             SourceContract(
@@ -132,14 +132,16 @@ SCENARIO_CONTRACTS: dict[str, ScenarioContract] = {
                     column("to"),
                     column("from"),
                     column("size"),
-                    column("attachments", required=False),
+                    column("attachments", "attachment_count", required=False),
                 ),
             ),
         ),
         notes=(
-            "Core activity groups follow peer-reviewed r4.2 descriptions. "
-            "Exact publisher columns and optional LDAP/psychometric sources "
-            "must be reconciled with the bundled release README after download."
+            "Core activity groups reconciled with publisher r4.2 README and headers. "
+            "file.csv is removable-media copy activity without an activity field; "
+            "email headers use attachments whereas README says attachment_count. "
+            "Core schema validation is not full data or label-policy acceptance; "
+            "LDAP/psychometric sources and answer observables are audited separately."
         ),
     ),
     "cicids2017": ScenarioContract(

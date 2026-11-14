@@ -94,7 +94,10 @@ def iter_scenario_chunks(
         raise NotADirectoryError(f"Raw directory does not exist: {raw_dir}")
 
     contract = SCENARIO_CONTRACTS[scenario]
-    csv_files = sorted(path for path in raw_dir.rglob("*.csv") if path.is_file())
+    csv_files = sorted(
+        path for path in raw_dir.rglob("*.csv")
+        if path.is_file() and not path.name.startswith("._")
+    )
 
     for source in contract.sources:
         matches = [path for path in csv_files if matches_source(path, raw_dir, source)]
