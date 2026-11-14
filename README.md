@@ -17,11 +17,66 @@ public data without downloading the 200+ GiB dataset collection.
 
 - Synthetic scenario: implemented, tested, and reproducible from a committed
   config.
-- CERT r4.2, CICIDS2017, CSE-CIC-IDS2018: researched and represented by storage,
-  schema-inspection, and feature contracts; no real data is bundled or claimed
-  as evaluated.
-- Next active-data milestone: CERT r4.2 after suitable external storage is
-  available.
+- CERT r4.2: accepted external snapshot, frozen label/group policy, daily
+  preparation and isolated experiment inputs implemented; no dataset is bundled.
+  [First RF/IF validation baselines](docs/cert-r4.2-benchmark.md) completed on
+  2026-11-13. [LSTM seed 42 and quality diagnostics](docs/cert-r4.2-lstm-baseline.md)
+  are also complete. [Five-seed robustness and grouped CV](docs/cert-r4.2-robustness.md)
+  compare the original and global-only history policies; 30 candidates are frozen.
+  [Frozen final evaluation](docs/cert-r4.2-final-evaluation.md) is complete:
+  mean test F1 for global-only RF/IF/LSTM is 0.1863/0.0097/0.0129.
+  Current test is now used; new confirmatory improvement claims require an
+  independent holdout. All models still need quality work, especially recall.
+  [Causal history v3](docs/cert-r4.2-causal-history.md) is implemented and audited.
+  [Paired group-CV](docs/cert-r4.2-group-cv-v3.md) is complete: mean outer RF F1
+  0.2266 → 0.2346 with more false alarms; IF worsens and LSTM gains are limited.
+  This is development evidence on reused folds, not independent confirmation.
+  [File/USB deviations](docs/cert-r4.2-file-usb-v4.md) complete quality increment 3:
+  RF with a frozen early profile reaches mean outer F1 0.2919; pooled FP
+  1,255 → 905 and TP 249 → 256 versus v3, still missing 390/646 positives.
+  IF/LSTM quality remains weak; no universal policy replacement is claimed.
+  [Endpoint score and fixed histogram boosting](docs/cert-r4.2-model-variants-v5.md)
+  complete increment 4: HGB rolling mean outer F1/PR-AUC 0.6217/0.7056;
+  pooled precision 59.34%, recall 60.99%, TP394/FP270/FN252. Endpoint-only
+  scoring does not resolve LSTM quality. HGB is a supervised development
+  candidate; that increment used one seed on repeated development folds.
+  [Operating points and five-seed stability](docs/cert-r4.2-operating-point-v6.md)
+  complete increment 5: 36 new fits, nine frozen controls and 135 decision
+  profiles. The primary budget of 1 FP/1,000 background days with recall≥50%
+  is not met on outer accounts; HGB gives pooled FP354, recall59.91%,
+  F1 0.5580 versus its unchanged F1 control FP270/F1 0.6015. All HGB seed scores
+  are identical; repeated seeds do not resolve group-transfer variation.
+  All five quality increments are complete within development scope;
+  independent confirmation remains unavailable. See the
+  [readiness assessment and remaining stages](docs/cert-r4.2-stage-assessment.md).
+- CICIDS2017 and CSE-CIC-IDS2018: researched and represented by storage,
+  schema-inspection and feature contracts; neither is claimed as evaluated.
+
+## Development Direction — Planned
+
+Research integrity is the project-owner priority: improve through justified
+development experiments, retain negative results, and do not tune on test.
+See [contribution rules](CONTRIBUTING.md#before-changing-an-experiment) and the
+[concrete next experiment plan](docs/cert-r4.2-improvement-plan.md).
+
+Argus will have one integrated research workspace, **Spectra Lab**: Overview,
+Model Selection, Event Investigation, and Scenario Checks. EventLens is the
+former investigation name, not another product, service or install.
+
+One workflow investigates a frozen model through source records, exact inputs,
+normal references and valid raw-data changes followed by repeat inference.
+The other runs bounded configuration studies and compares validation quality,
+training/inference cost and memory. Candidate studies must not read test;
+final evaluation is separate, after selection is frozen.
+
+These features are not implemented in v0.2. The agreed scope has no separate
+Streamlit dashboard or live macOS/Wi-Fi collector. The interface will use
+minimalist dark navy, neutral controls, and red for errors/anomaly indicators:
+see the [design specification](docs/design.md).
+
+Resume with the [post-SSD sequence](docs/roadmap.md#resume-after-ssd) and the
+[implementation plan](docs/spectra-lab-implementation-plan.md). Small synthetic
+fixtures and contract work do not require the external SSD.
 
 ## Quick Start
 
@@ -126,9 +181,13 @@ datasets should be kept on an external SSD by setting an existing mount path:
 export ARGUS_DATA_ROOT="/Volumes/ArgusData/argus-data"
 python3 src/check_data_storage.py \
   --scenario cert_r4_2 \
-  --required-gib 100 \
   --create-scenario-directories
 ```
+
+Verify that the example mount exists before creating its data root. Before
+downloading, also pass `--required-gib` with a budget calculated from the
+selected source manifest. `ARGUS_DATA_ROOT` currently relocates datasets, not
+the repository's `results/` directory.
 
 If `ARGUS_DATA_ROOT` is set but the volume is missing, Argus fails instead of
 silently creating a large internal-drive copy. The exact storage and capacity
@@ -143,15 +202,17 @@ python3 src/inspect_dataset.py --scenario cicids2017
 python3 src/inspect_dataset.py --scenario cse_cic_ids2018
 ```
 
-The CERT contract is explicitly provisional until it is reconciled with the
-README bundled in the chosen r4.2 release.
+The CERT core schema has been reconciled with the bundled r4.2 README and actual
+headers. Full data preparation follows the accepted observable account-day
+label policy; model evidence and its limitations are linked in Release Status.
 
 ## Reproducibility Rules
 
 - Split raw records before fitting preprocessing state.
 - Use validation for features, hyperparameters, early stopping, and thresholds.
 - Evaluate test only after the configuration is frozen.
-- Compare models only on rows with identical `user_id`, `timestamp`, and target.
+- Compare models on identical evaluation objects and targets. The v0.2 check
+  uses user/time/label; stable event/item IDs are part of the planned contract.
 - Report precision, recall, F1, PR-AUC, ROC-AUC, FPR, support, prevalence, and
   timing.
 - Keep data hashes, resolved config, environment, split report, feature
@@ -204,6 +265,8 @@ are ignored. They can be rebuilt from code, config, and publisher data.
 ## Documentation
 
 - [Architecture](docs/architecture.md)
+- [Spectra Lab implementation plan](docs/spectra-lab-implementation-plan.md)
+- [Interface and design specification](docs/design.md)
 - [Dataset research](docs/datasets.md)
 - [Data storage policy](docs/data-storage.md)
 - [Experimental protocol](docs/experimental-protocol.md)
@@ -215,3 +278,40 @@ are ignored. They can be rebuilt from code, config, and publisher data.
 ## License
 
 Argus is licensed under the [MIT License](LICENSE).
+
+## Independent experiments
+
+For new runs use [the isolated experiment workflow](docs/isolated-experiments.md).
+It separates preparation, validation-only candidates and explicit final test,
+with per-run weights, exact inputs, IDs and checksummed artifacts on a selected
+storage root. The Quick Start above remains the legacy v0.2 reference workflow.
+
+### CERT: active account-day preparation
+
+`src/prepare_cert_days.py` streams the five accepted r4.2 activity logs into
+raw daily aggregates, exact event membership and positive evidence using
+the frozen account split. It verifies raw hashes, observable rows, ID uniqueness
+and population counts. See [commands, formulas and artifact contract](docs/cert-r4.2-day-preparation.md).
+Daily aggregation is increment 2. [Increment 3](docs/cert-r4.2-experiments.md)
+now connects CERT through `experiment.py prepare-cert`: frozen train transforms,
+causal train histories, held-out cold-start, shared endpoint cohorts and the
+existing candidate/final workflow. The daily aggregation command itself does
+not train models.
+
+[Causal history v3 development preparation](docs/cert-r4.2-causal-history.md)
+adds the same past-observation update rule in every role. Its separate command
+prepares only original train/validation, with no model fit or new test scoring.
+[Paired grouped comparisons](docs/cert-r4.2-group-cv-v3.md) for all three models
+are complete, including negative results. [The separate file/USB ablation](docs/cert-r4.2-file-usb-v4.md)
+is now complete: six new audited preparations, 18 new fits and nine reused
+v3 controls. Optional rolling/frozen policies add four inputs while preserving
+all common features, labels and endpoints. No test is scored; score/architecture
+variants were compared separately in [quality increment 4](docs/cert-r4.2-model-variants-v5.md):
+12 endpoint-score LSTMs and 12 HGB candidates reuse all four existing feature
+policies/preparations. HGB fits the same labeled inner-fit days as RF;
+its automatic random early stopping is disabled. The legacy models and
+synthetic reference remain available. [Operating-point work](docs/cert-r4.2-operating-point-v6.md)
+is also complete with an explicit negative result for the primary FP/recall
+budget. No new accepted independent CERT holdout or deployment threshold is
+claimed. The next implementation stage is frozen inference/scenario replay;
+see the [remaining stages](docs/cert-r4.2-stage-assessment.md).

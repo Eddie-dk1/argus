@@ -2,6 +2,9 @@
 
 Last reviewed: 2026-07-21.
 
+Spectra integration rules added 2026-10-27. Publisher statements retain their
+original review date; this amendment concerns future development contracts.
+
 Argus uses scenario-specific feature sets. It does not force CERT behavioral
 events and CIC network flows into one artificial universal table. Shared names
 below express comparable concepts, not identical measurements.
@@ -108,8 +111,11 @@ sequence set. They can be examined only in a named ablation.
 The official collection contains versioned synthetic activity data and an
 answer key. Peer-reviewed work on r4.2 describes separate logon, device, file,
 email, HTTP, and LDAP/organizational inputs and frequently models a `user-day`.
-Argus will verify exact columns against the bundled r4.2 README before accepting
-the schema.
+The core schema was reconciled with bundled r4.2 documentation on 2026-11-12.
+The target and active account-day population are fixed by
+[label policy v1](cert-r4.2-label-policy.md). Complete-day aggregates are scored
+at the end of the day. Answer membership and incident/group metadata are never
+model features.
 
 ### Required user-day tabular groups
 
@@ -125,7 +131,10 @@ the schema.
 
 ### Behavioral deviation features
 
-For each user-day, calculate from earlier train history only:
+Global references fit train only. Personal references use past observations
+under an explicitly named policy: the original policy adapts train accounts
+only; [v3](cert-r4.2-causal-history.md) permits the same emit-before-update rule
+in every role, without labels. Candidate context families include:
 
 - deviation from the user's median and robust spread;
 - rolling 7-day and 30-day counts/sums when enough history exists;
@@ -135,6 +144,18 @@ For each user-day, calculate from earlier train history only:
 - activity-source transition frequencies.
 
 Cold-start and insufficient-history flags accompany every deviation value.
+
+[Step 3 file/USB ablation](cert-r4.2-file-usb-v4.md) implements two optional
+75-column preparations over v3's unchanged 71 inputs. Three added deviations
+use `log1p(file_events)`, `log1p(connect_count)` and
+`log1p(device_paired_seconds)`, plus a fallback indicator. References are either
+past active days in `[date-30,date)` with at least five observations, or the
+first five observed active days frozen thereafter. Fixed IQR floor 1 and clip
+20 apply to these new deviations only; fallback/scaler fit inner train only.
+Positive days stay in history. These are explicit candidate policies, not a
+change to existing frozen configurations or a guarantee of better detection.
+File-event counts do not establish copying to USB; paired device duration
+covers matched connections within one PC/day, not complete device occupancy.
 
 ### Required sequence representation
 
@@ -253,6 +274,37 @@ A feature set can be used in a final run only when its manifest records:
 - feature-set name and version;
 - ablation result for candidate additions.
 
+## Planned Spectra Integration
+
+Event Investigation and Scenario Checks share the same core formulas/state.
+
+- Preserve source IDs before aggregation/sorting and store analysis units plus
+  exact item/event membership used by each model.
+- Separate raw values, transformed features, numerical inputs and additional
+  timeline context. Record order, dtype, units and transformation rules.
+- LSTM membership is not the whole feature-dependency graph: rolling history
+  and frozen train profiles may extend beyond the displayed window.
+- Start synthetic patches with bytes_sent. Recompute logs, ratios, affected
+  histories and scaling from a separate raw copy. Never change only a scaled
+  column while leaving dependent features inconsistent.
+- The current prior_log_bytes_sent_sum sums log1p volumes; it is not log1p
+  of the raw sum. Reproduce the implemented formula.
+- Require no-op and full-history oracle checks; scenario execution never refits
+  profiles, encoders or scalers.
+- With primary no-user-overlap CERT splits, held-out users have no personal
+  train profile. Use frozen group/global fallbacks and cold-start flags, never
+  a personal baseline fitted on their full held-out histories. Causal online
+  history would require a separate declared policy.
+- CERT items are user-days mapped to source events. Raw changes require
+  reaggregation; synthetic bytes_sent is not a universal input field.
+- Reference normality/exclusions are distinct from detector targets. Predicted
+  normal examples are not ground-truth-confirmed normal examples.
+- Freeze features and window length in the initial study so comparisons use
+  one common evaluation population.
+
+See the [implementation plan](spectra-lab-implementation-plan.md) and
+[experimental protocol](experimental-protocol.md).
+
 ## Sources
 
 - [SEI Insider Threat Test Dataset](https://sei.cmu.edu/library/insider-threat-test-dataset/)
@@ -260,3 +312,40 @@ A feature set can be used in a final run only when its manifest records:
 - [CICIDS2017 official description](https://www.unb.ca/cic/datasets/ids-2017.html)
 - [CSE-CIC-IDS2018 official description](https://www.unb.ca/cic/datasets/ids-2018.html)
 - [Troubleshooting an Intrusion Detection Dataset: the CICIDS2017 Case Study](https://doi.org/10.1109/SPW53761.2021.00009)
+
+## Implemented CERT daily aggregates — 2026-11-13
+
+[Daily preparation v1](cert-r4.2-day-preparation.md) implements source counts,
+fixed off-hours counts, timing/gaps, PC diversity, logon/device actions,
+same-day device-pair durations with unmatched-event counts, file extension
+groups, HTTP domain/URL diversity and email size/attachments/recipient aggregates.
+Its exact feature allowlist is `datasets.cert_days.FEATURES`; the earlier
+required-feature tables describe the broader target, not all implemented fields.
+Historical novelty/deviations and train-fitted transforms belong to increment 3.
+Missing publisher fields (failed logon, HTTP upload/download, file bytes,
+received-email action) are not inferred as if observed. Device durations are
+limited to same-day pairs. Psychometric values and organizational attributes
+are not model inputs in this version.
+
+### CERT integration implementation update — 2026-11-13
+
+All three CERT preparation increments are now implemented; see the
+[exact transformation/history/window protocol](cert-r4.2-experiments.md).
+The new preparation has 71 inputs fitted/transformed with train-only state.
+Personal rolling/novelty history is causal within train; held-out users use
+frozen global fallbacks with explicit cold-start flags. Calendar gaps are
+retained, and windows span five active days. CERT LSTM uses all-background
+training windows; synthetic retains its historical endpoint-normal policy.
+Full CERT preparation and a small IF validation-only smoke candidate completed;
+real test evaluation and research model comparisons remain future work.
+
+### History control variant — 2026-11-13
+
+The separately named `cert_frozen_global_only_v2` applies the same frozen train
+reference to every split. Personal rolling counts remain zero and personal
+history availability flags one everywhere (all five standardize to zero).
+Global robust volume deviation and novelty use train-only batch-fitted state;
+calendar observation gaps remain causal. No target, window length or base
+feature changes. Original v1 artifacts remain the control. The
+[bounded comparison and nested-calibration group-CV](cert-r4.2-robustness.md)
+refit all transformations separately in each development fit partition.

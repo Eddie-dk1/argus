@@ -2,6 +2,10 @@
 
 Last verified: 2026-07-21.
 
+Acquisition sequence aligned with Spectra Lab on 2026-10-27. CERT local
+acquisition/audit and [label policy v1](cert-r4.2-label-policy.md) completed
+2026-11-12. Network-dataset publisher facts retain the earlier review date.
+
 Argus does not store public cybersecurity datasets in Git. Public data must be
 downloaded to local ignored storage, while the repository keeps only source
 code, schemas, acquisition notes, checksums/manifests, and small synthetic test
@@ -9,13 +13,13 @@ fixtures.
 
 This document separates facts stated by dataset publishers from project
 decisions. File names and checksums must be verified against the publisher's
-manifest or bundled README after acquisition; no large dataset has been
-downloaded while preparing this plan.
+manifest or bundled README after acquisition. CERT r4.2 is now on external
+storage; this does not imply network-dataset acquisition or model evaluation.
 
 ## Project Decisions
 
-The initial diploma experiments will use the smallest useful published form of
-each dataset:
+The planned diploma sources use the smallest useful published form of each
+dataset, in this acquisition order:
 
 1. `CERT r4.2` activity logs and its answer key for the behavioral scenario;
 2. `CICIDS2017 MachineLearningCSV` flow files for the first network scenario;
@@ -26,6 +30,19 @@ Raw PCAPs, host images, and the complete CERT release collection are optional
 follow-up sources. They are not required for the first Argus model comparison.
 This keeps acquisition and preprocessing feasible without weakening the stated
 tabular/sequence research scope.
+
+After SSD setup, accept CERT r4.2 and matching answers first. Do not acquire the
+whole collection or all three sources simultaneously. The first laboratory uses
+synthetic correctness fixtures and an accepted CERT baseline; network sources
+remain separate subsequent milestones.
+
+Every adapter declares its analysis unit/capabilities. Synthetic events, CERT
+user-days and flows are not interchangeable. Preserve unit-to-source mappings
+and enable raw scenarios only when the affected units can be recomputed from
+supported fields. Viewing results does not imply scenario replay support.
+
+See the [post-SSD roadmap](roadmap.md#resume-after-ssd) and
+[implementation plan](spectra-lab-implementation-plan.md).
 
 ## CERT Insider Threat Test Dataset
 
@@ -54,19 +71,19 @@ file, HTTP, email, organizational/LDAP, and psychometric data. The exact files
 and columns will be accepted only after validating them against the README
 bundled with the downloaded release.
 
-The primary experimental entity will be a `user-day`; event sequences remain
-available for the LSTM scenario. Labels will be derived from the official
-answer key, not inferred from activity volume.
+The primary experimental entity is an active account-day. Labels follow the
+fixed observable-membership policy, with incident user and logged account kept
+separate. Event sequences remain planned for the LSTM scenario.
 
 ### Acquisition checklist
 
-- [ ] Select only `r4.2` and `answers.tar.bz2` in KiltHub instead of using
+- [x] Select only `r4.2` and `answers.tar.bz2` in KiltHub instead of using
   `Download all`.
-- [ ] Save KiltHub metadata and the bundled `r4.2` README with the local raw
-  data.
-- [ ] Record file names, byte sizes, and SHA-256 hashes in a local manifest.
+- [x] Save KiltHub metadata and the bundled `r4.2` README with the local raw
+data.
+- [x] Record file names, byte sizes, and SHA-256 hashes in a local manifest.
 - [ ] Confirm that the license and required attribution have not changed.
-- [ ] Validate the answer-key user identifiers and scenario dates before
+- [x] Validate the answer-key user identifiers and scenario dates before
   generating labels.
 
 ### Known limitations and controls
