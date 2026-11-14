@@ -255,4 +255,19 @@ loads CPU weights and exposes full-window reconstruction with either named
 score policy. An operating bundle requires an explicit profile. Schema, policy,
 status, lineage and checksum checks precede scoring; no fit or threshold search
 runs. The [S3 contract](s3-frozen-inference.md) documents producer provenance
-responsibilities and the remaining diagnosis/scenario/CLI work.
+responsibilities and the remaining scenario/CLI work.
+
+### Frozen replay and diagnosis — S3 part 2
+
+`run_frozen_diagnostics.py` binds the two declared research series, source
+preparations, model/state hashes and exact saved inputs. It replays all 60
+model-variants candidates and all profiles of nine seed42 operating bundles
+through the common API, checking complete inputs, feature/endpoint ordering,
+window membership, scores and decisions exactly. `frozen_diagnostics.py`
+separates reporting labels from inference, accounts/groups/scenarios, history
+availability from policy fallback, seed variation from fold variation, and
+undefined metrics from legacy numeric values. `frozen_diagnostic_report.py`
+produces the readable report/figure and a quality-hypothesis queue without
+selecting thresholds or models. The versioned JSON includes all 45 operating
+bundles and every saved fold/seed/profile; cross-fold score rankings remain
+undefined. See [the protocol and results](s3-frozen-diagnostics.md).

@@ -36,8 +36,9 @@ profiles. HGB scores are identical across seeds, but the primary budget of
 Its pooled F1 is 0.558039, FP354, versus the unchanged F1 control 0.601527/FP270.
 No independent CERT source is available; all five increments remain development
 evidence. [S3 part 1](s3-frozen-inference.md) provides permanent quality rules
-and shared frozen inference. Next are saved-result diagnosis and verified
-synthetic scenarios, followed by S4–S7; network data remain separate milestones. See the
+and shared frozen inference. [Part 2](s3-frozen-diagnostics.md) completes exact
+saved-result replay and diagnosis; verified synthetic scenarios/CLI remain
+part 3, followed by S4–S7. Network data remain separate milestones. See the
 [readiness assessment and exact remaining work](cert-r4.2-stage-assessment.md).
 The eight-tree IF smoke run is excluded from this research comparison.
 
@@ -287,4 +288,5 @@ The [assessment](cert-r4.2-stage-assessment.md) records S0–S2 progress and the
 remaining S3–S8 work. Its preliminary four-task suggestion is superseded by
 the [agreed three-part S3 plan](s3-frozen-inference.md): permanent rules/common
 frozen inference, saved-result diagnosis, then verified synthetic scenarios/CLI.
-Part 1 implements the shared API; parts 2–3 remain separate requests.
+Parts 1–2 implement the shared API and complete saved-result replay/diagnosis;
+part 3 (synthetic scenarios/CLI) remains a separate request.

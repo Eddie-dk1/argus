@@ -7,7 +7,7 @@
 1. **Общие правила и inference.** Постоянные требования всех этапов в
    [AGENTS.md](../AGENTS.md), CONTRIBUTING и экспериментальном протоколе;
    единая загрузка RF/IF/HGB/LSTM из frozen artifacts.
-2. **Воспроизведение и диагностика.** Все 60 результатов серии model-variants
+2. **Воспроизведение и диагностика — выполнено.** [Отчёт пункта 2](s3-frozen-diagnostics.md): все 60 результатов серии model-variants
    и все профили девяти operating bundles seed42/трёх folds; диагностика всех
    folds/seeds пунктов 4–5. Сравнить calibration/outer, FP-бюджет и recall,
    score distributions, аккаунты/независимые группы, cold-start и сценарии.
@@ -113,8 +113,8 @@ batch, перенос bundle и табличный inference при запрещ
 отдельно в игнорируемом `results/experiments/`. Patch применяется к snapshot
 этого пункта; он не включает прежние незакоммиченные изменения. Общий commit
 или push не создаётся. Данные/веса с SSD и опубликованный synthetic reference
-остаются исходными. Полная диагностика пункта 2 и raw scenarios/CLI пункта 3
-требуют следующих запросов.
+остаются исходными. Полная диагностика выполнена в [пункте 2](s3-frozen-diagnostics.md).
+Raw scenarios/CLI пункта 3 требуют следующего запроса.
 
 Для будущего no-op raw recompute заранее сохраняются допуски: float32
 `rtol=1e-6, atol=1e-7`; float64 `rtol=1e-12, atol=1e-12`, решения точные.

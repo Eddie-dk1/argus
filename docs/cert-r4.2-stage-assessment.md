@@ -55,7 +55,7 @@ entity/duplicate/episode audit до оценивания. Новый катал�
 | S0: SSD и принятие CERT | Выполнено для текущего CERT snapshot. Любой новый источник проходит собственный acceptance gate. |
 | S1: Контракты и изоляция | Основной isolated experiment workflow выполнен. Его контракты нужно использовать в будущем runtime/UI; legacy root-команды всё ещё не study runner. |
 | S2: Публичный baseline | CERT preparation, первая frozen final и quality experiments выполнены. Независимое подтверждение улучшенного detector не получено; релиз v0.3.0 не объявлен автоматически. |
-| S3: Frozen inference и сценарий | [Пункт 1 выполнен](s3-frozen-inference.md): общий reload/inference API и постоянные правила. Далее — полный saved assessment replay/диагностика, затем no-op, synthetic raw patch, полный пересчёт и отдельные результаты/CLI. |
+| S3: Frozen inference и сценарий | [Пункты 1–2 выполнены](s3-frozen-diagnostics.md): общий inference, exact replay и диагностика всех folds/seeds. Далее — пункт 3: no-op, synthetic raw patch, полный пересчёт и отдельные результаты/CLI. |
 | S4: Разбор событий | Source→input/window, timeline, reconstruction residuals где применимо, train-only normal references и exact nearest neighbours без self/overlap. CERT сначала read-only; what-if требует raw reaggregation policy. |
 | S5: Spectra Lab | Один backend и UI: обзор, сравнение моделей, разбор и сценарии, jobs/history и capabilities. Готового объединённого продукта пока нет. |
 | S6: Подбор моделей | Bounded random search, затем честное сравнение с TPE при одинаковых budget/cohort; quality/latency/memory measurements. Текущие fixed ablations не являются готовым AutoML/Spectra search. Не превращать development reuse в независимое подтверждение. |
@@ -79,8 +79,8 @@ entity/time полями и проверяемым membership. Порядок с
 
 Обновление 2026-11-14: это предварительное предложение заменено
 [согласованным планом из трёх пунктов](s3-frozen-inference.md). Пункт 1 реализует
-постоянные правила и общий inference API; полные replay/диагностика и
-synthetic scenarios/CLI остаются следующими отдельными запросами.
+постоянные правила и общий inference API; [пункт 2](s3-frozen-diagnostics.md)
+завершил полные replay/диагностику. Synthetic scenarios/CLI остаются пунктом 3.
 
 1. Единый загрузчик frozen artifacts и inference contract для сохранённых
    моделей: порядок features, score semantics, numeric threshold, provenance

@@ -56,6 +56,16 @@ CPU settings, dtype and batching. Synthetic fixture fits are functional checks,
 not new research evidence. This amendment neither launches a new CERT test
 evaluation nor asserts improved detection quality.
 
+S3 part 2 is now complete: [exact replay and diagnosis](s3-frozen-diagnostics.md)
+of all model-variants assessments and seed42 operating profiles, with diagnosis
+of all saved operating seeds. Inputs/features/IDs/membership/scores/decisions
+are checked exactly; calibration/outer metrics reproduce, including the failed
+primary budget. Reporting retains undefined quantities as null with reasons,
+separates available history from policy fallback, and separates fixed-fold
+model-seed statistics from fixed-seed fold statistics. Identical values have
+zero measured seed variation. The new report is reused-development diagnosis,
+not independent confirmation; no thresholds or active models were reselected.
+
 ## Research questions
 
 Argus evaluates four questions:
