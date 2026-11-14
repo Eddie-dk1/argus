@@ -313,5 +313,8 @@ its automatic random early stopping is disabled. The legacy models and
 synthetic reference remain available. [Operating-point work](docs/cert-r4.2-operating-point-v6.md)
 is also complete with an explicit negative result for the primary FP/recall
 budget. No new accepted independent CERT holdout or deployment threshold is
-claimed. The next implementation stage is frozen inference/scenario replay;
-see the [remaining stages](docs/cert-r4.2-stage-assessment.md).
+claimed. [S3 part 1](docs/s3-frozen-inference.md) adds the common read-only
+`load_frozen_run` API for RF/IF/HGB and both LSTM scores, explicit operating
+profiles and label-free prepared batches. Saved-result diagnosis and verified
+raw scenario replay are the next two parts; see the
+[remaining stages](docs/cert-r4.2-stage-assessment.md).

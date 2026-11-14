@@ -244,3 +244,15 @@ seeds/folds/profiles are retained. The missing independent CERT source is
 recorded explicitly rather than reusing the consumed test as confirmation.
 See the [protocol and results](cert-r4.2-operating-point-v6.md) and
 [remaining implementation stages](cert-r4.2-stage-assessment.md).
+
+### Shared frozen inference — S3 part 1
+
+`inference.py` loads sealed isolated candidates and operating bundles through
+`load_frozen_run`. `PreparedBatch` separates numeric inputs and ordered IDs/window
+membership from reporting labels, binding preparation and feature-state hashes.
+RF/IF/HGB reuse the existing scorer without importing PyTorch; LSTM lazily
+loads CPU weights and exposes full-window reconstruction with either named
+score policy. An operating bundle requires an explicit profile. Schema, policy,
+status, lineage and checksum checks precede scoring; no fit or threshold search
+runs. The [S3 contract](s3-frozen-inference.md) documents producer provenance
+responsibilities and the remaining diagnosis/scenario/CLI work.

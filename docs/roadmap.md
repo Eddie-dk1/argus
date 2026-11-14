@@ -35,8 +35,9 @@ profiles. HGB scores are identical across seeds, but the primary budget of
 1 FP/1,000 background days with recall≥50% fails on all three outer folds.
 Its pooled F1 is 0.558039, FP354, versus the unchanged F1 control 0.601527/FP270.
 No independent CERT source is available; all five increments remain development
-evidence. Next implementation work is S3 frozen inference/scenarios, followed
-by S4–S7; network data remain separate milestones. See the
+evidence. [S3 part 1](s3-frozen-inference.md) provides permanent quality rules
+and shared frozen inference. Next are saved-result diagnosis and verified
+synthetic scenarios, followed by S4–S7; network data remain separate milestones. See the
 [readiness assessment and exact remaining work](cert-r4.2-stage-assessment.md).
 The eight-tree IF smoke run is excluded from this research comparison.
 
@@ -283,4 +284,7 @@ previous checkpoints and 331 prior manifest/weight hashes are unchanged.
 The five quality increments are complete within their declared development
 scope; this does not complete a deployment, release or independent validation.
 The [assessment](cert-r4.2-stage-assessment.md) records S0–S2 progress and the
-remaining S3–S8 work, proposing four sequential S3 tasks. S3 has not started.
+remaining S3–S8 work. Its preliminary four-task suggestion is superseded by
+the [agreed three-part S3 plan](s3-frozen-inference.md): permanent rules/common
+frozen inference, saved-result diagnosis, then verified synthetic scenarios/CLI.
+Part 1 implements the shared API; parts 2–3 remain separate requests.

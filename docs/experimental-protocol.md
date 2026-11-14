@@ -14,6 +14,48 @@ thresholds, evaluates models, and records artifacts. Deviations are allowed
 only when a scenario makes a rule impossible; the deviation and its rationale
 must be committed before inspecting final test metrics.
 
+## Permanent quality and model policy
+
+The [root repository rules](../AGENTS.md) apply to all stages, including S3–S8.
+The primary goals are precision, recall, F1, PR-AUC and false alarms, with
+overfitting risk controlled; accuracy is descriptive. Before changing model
+fit, preprocessing, features, architecture or calibration, declare hypothesis,
+control, permitted data/cohort, objective, bounded budget and seeds. Preserve
+every declared result, including regressions, failed seeds and weak scenarios.
+Data corrections require source justification and an explicit version.
+
+Select models and numeric thresholds before final evaluation. Mark reused
+development folds and the consumed CERT test; independent confirmation needs
+independent data. Distinguish model-seed variation from fold variation; identical
+HGB arrays are not new independent observations. Do not pool cross-fold score
+rankings into PR-AUC. A stage states whether it contributes a new experiment,
+diagnosis, or preservation check; interface work alone does not improve accuracy.
+
+A common inference/comparison contract does not imply one winning model for
+all datasets. CERT, CICIDS2017 and CSE-CIC-IDS2018 have separate training,
+weights and selection. HGB remains the CERT research candidate, with RF/IF/LSTM
+retained as comparisons. Replacements require a predeclared comparison of
+quality, stability and cost; historical results remain available. Sequential
+models require justified event ordering and exact window membership.
+
+### S3 frozen inference amendment — 2026-11-14
+
+[S3](s3-frozen-inference.md) has three sequential parts, one per request:
+shared rules/inference, saved-result replay/diagnosis, then verified synthetic
+scenarios/CLI. Part 1 adds `load_frozen_run`, label-free `PreparedBatch`,
+`score`/`predict`, and full-window LSTM `reconstruct`. The existing scorers,
+weights, feature state and numeric thresholds remain authoritative. Inference
+does not fit, select epochs, calibrate or rank profiles. Operating bundles
+require an explicit saved profile even if one is ineligible on calibration.
+
+The historical formats imply higher-is-more-anomalous scores and `>=` decisions;
+explicit incompatible declarations are rejected. IF retains negative
+`score_samples`; LSTM retains the named window/endpoint mean MSE, CPU float32
+and inference batch size 128. Replays must retain prior dependency versions,
+CPU settings, dtype and batching. Synthetic fixture fits are functional checks,
+not new research evidence. This amendment neither launches a new CERT test
+evaluation nor asserts improved detection quality.
+
 ## Research questions
 
 Argus evaluates four questions:
