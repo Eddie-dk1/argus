@@ -23,7 +23,9 @@ from sklearn.metrics import RocCurveDisplay
 from sklearn.metrics import confusion_matrix
 
 from experiment_tracking import create_run_directory
+from experiment_tracking import finalize_run_artifacts
 from experiment_tracking import save_run_results
+import joblib
 from utils import DEFAULT_CONFIG_PATH
 from utils import PLOTS_DIR
 from utils import PROCESSED_DIR
@@ -371,6 +373,21 @@ def main() -> None:
             timing=timing,
             error_analysis=errors,
             plot_paths=plots,
+        )
+
+        fitted_model = random_forest if model_name == "random_forest" else isolation_forest
+        finalize_run_artifacts(
+            run_dir, predictions=outputs,
+            model_writer=lambda path: joblib.dump(fitted_model, path),
+            model_filename="model.joblib",
+            inference_contract={
+                "model": model_name, "feature_columns": feature_columns,
+                "threshold": rf_threshold if model_name == "random_forest" else if_threshold,
+                "score": "predict_proba_class_1" if model_name == "random_forest" else "negative_score_samples",
+                "classes": random_forest.classes_.tolist() if model_name == "random_forest" else None,
+                "decision": "score >= threshold",
+            },
+            feature_state_path=PROCESSED_DIR / "feature_state.json",
         )
 
     print(f"Saved baseline metrics to: {RESULTS_DIR / 'metrics_baseline.json'}")

@@ -1,0 +1,38 @@
+{
+  "plan_id": "s3_frozen_replay_diagnostics_v1",
+  "quality_contribution": "preservation and diagnosis of reused development results",
+  "sources": {
+    "model_variants": {
+      "id": "cert_model_variants_dd1281e93f8940c591264affbc572a07",
+      "manifest_sha256": "573e8e3cbebf2283ef232d8a49064733d70ac991dccfd22696905295dc846369",
+      "expected_runs": 60
+    },
+    "operating_points": {
+      "id": "cert_operating_point_1677f9343b73418ea6887db0b680d458",
+      "manifest_sha256": "9f417f3c02b55865bb27cb8015b619fc9d97d1b15d87e32f84604061506312c9",
+      "expected_runs": 45
+    }
+  },
+  "replay": {
+    "model_variants": "all",
+    "operating_reference_seed": 42,
+    "operating_profiles": "all_saved",
+    "numeric_equality": "exact; no tolerance or dtype conversion of saved NPZ inputs/scores",
+    "cpu_threads": 1,
+    "lstm_batch_size": 128
+  },
+  "diagnosis": {
+    "model_seeds": "all_saved",
+    "folds": "all_saved",
+    "roles": ["calibration", "assessment"],
+    "score_quantiles": [0, 0.25, 0.5, 0.75, 0.9, 0.99, 1],
+    "observed_prior30_day_buckets": [0, 1, 5, 10],
+    "binary_feature_inverse_atol": 0.00001,
+    "fp_top_accounts": [1, 3, 10],
+    "pooled_rank_metrics": false,
+    "independent_confirmation": false
+  },
+  "budget": {"research_fits": 0, "threshold_selections": 0, "search_trials": 0},
+  "test_policy": "No real test inputs or scores. Reporting metadata is filtered to original primary train before joins. Existing development assessment only.",
+  "limits": "Frozen thresholds; no winner/profile reselection. Reused folds, repeated seeds and identical HGB scores are not independent evidence. New hypotheses need separate bounded protocols."
+}

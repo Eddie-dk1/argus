@@ -1,0 +1,58 @@
+{
+  "plan_id": "cert_r4_2_paired_group_cv_v3",
+  "fixed_on": "2026-11-14",
+  "stage": "2 of 5: paired grouped development assessment",
+  "daily_preparation_id": "cert_days_2ccb63d841e14a84940cc01a16c1a9f2",
+  "daily_manifest_sha256": "784b9271685251aecf2124955a4f1469263825cb12368220cb00d45d0bcb86e6",
+  "development_preparation_id": "cert_history_development_356c71d43306477eb71dc1015df13c97",
+  "development_preparation_manifest_sha256": "fe415dd6cdb0d288788071bffd9bdfb50daa16fb9ffc1d71cf8f1bcad2599b05",
+  "configs": {
+    "global_only_v2": {
+      "path": "configs/cert_r4_2_global_only_v2.json",
+      "sha256": "e64909e02de4ebcee73f4f13452032d5c6ba3c79c77a8004fcc8ef5bfbb716ba"
+    },
+    "causal_all_v3": {
+      "path": "configs/cert_r4_2_causal_history_v3.json",
+      "sha256": "3a997e2f43a752964e7c29d5b7161626076e5e06c463fc1d15be4e9d7ad5d8c2"
+    }
+  },
+  "hypothesis": "Same-account past-only context in all roles may improve detection over the frozen global-only policy; improvement is not assumed.",
+  "changed_factor": "History availability only; identical base inputs, targets, account groups, endpoint population, models, seed, hyperparameters and calibration objective.",
+  "population": "original primary train only; original primary validation and test excluded before feature building",
+  "target": "endpoint_account_day_observable",
+  "models": ["random_forest", "isolation_forest", "lstm_autoencoder"],
+  "cv": {
+    "outer_folds": 3,
+    "outer_seed": 142,
+    "inner_calibration_folds": 5,
+    "inner_calibration_seed_base": 242,
+    "model_seed": 42,
+    "group_unit": "frozen incident-connected accounts; overlapping windows stay within account/group",
+    "splitter": "StratifiedGroupKFold; use the first inner split deterministically, never choose it by metrics",
+    "fitting": "refit global profile, vocabulary, scaler and model on inner fit only; emit-before-update personal history in every role",
+    "calibration": "inner validation only for numeric threshold and LSTM epoch",
+    "assessment": "frozen candidate inference; process denies assessment.csv until candidate completion"
+  },
+  "objective": "inner_calibration_f1",
+  "threshold_ties": ["higher recall", "lower FPR", "lower threshold"],
+  "epoch_ties": "higher F1, higher recall, lower FPR; keep earliest exact tie",
+  "lstm_score": "unchanged mean squared reconstruction error over every feature and all five days",
+  "training_roles": "RF labeled inner fit; IF background inner-fit days; LSTM all-background inner-fit windows",
+  "reporting": [
+    "every fold/policy/model including zero recall and negative differences",
+    "within-fold PR-AUC, precision, recall, F1, FPR, TP/FP/FN/TN, support and coverage",
+    "paired fold deltas and fold mean/sample-SD/min/max; dependent folds are not independent samples",
+    "each primary train endpoint assessed exactly once per policy/model",
+    "pooled decisions and per-scenario recall; do not pool uncalibrated cross-fold scores into PR/ROC AUC",
+    "all exact numerical inputs, window memberships, predictions, checkpoints, thresholds, source/config/environment hashes and worker guards"
+  ],
+  "budget": {
+    "candidates": 18,
+    "max_lstm_epochs": 10,
+    "cpu_threads": 1,
+    "search_trials": 0,
+    "minimum_free_gib": 15
+  },
+  "limits": "One model seed, reused development folds and overlapping training partitions; no model selection from outer metrics within this series and no independent confirmation. Scenario 3 has very few independent groups.",
+  "test_policy": "CERT test was consumed on 2026-11-13. No prepared test reads, transformations, scoring or threshold selection here. The source CSV/context is co-located and verified before filtering primary train."
+}

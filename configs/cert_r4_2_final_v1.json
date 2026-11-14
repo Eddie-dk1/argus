@@ -1,0 +1,56 @@
+{
+  "plan_id": "cert_r4_2_frozen_final_v1",
+  "fixed_on": "2026-11-13",
+  "series_id": "cert_robustness_31049d9b8e5745bf975f8f5619f621d9",
+  "series_manifest_sha256": "fdaa36e76d3f3dd3db91b6a4fd3e2666cdc203f7fa234ef0d93fb0e284945ffa",
+  "frozen_registry_sha256": "97a69f52f22157fa4b017f8d8cec5dd740f21ca59149e3361cb5de0aba2e0dee",
+  "daily_preparation_id": "cert_days_2ccb63d841e14a84940cc01a16c1a9f2",
+  "daily_manifest_sha256": "784b9271685251aecf2124955a4f1469263825cb12368220cb00d45d0bcb86e6",
+  "policies": [
+    "causal_train_v1",
+    "global_only_v2"
+  ],
+  "models": [
+    "random_forest",
+    "isolation_forest",
+    "lstm_autoencoder"
+  ],
+  "seeds": [
+    7,
+    21,
+    42,
+    84,
+    168
+  ],
+  "expected_candidates": 30,
+  "expected_test_endpoints": 65433,
+  "expected_test_positive_days": 160,
+  "target": "endpoint_account_day_observable",
+  "snapshot_id": "b9184d3b5eec1780008155193ab0d27cc48bd0e7755477b51eeca7603693f487",
+  "evaluation": "Reload every frozen checkpoint and apply its saved threshold once to the shared test cohort. No fitting, epoch selection, recalibration, seed selection, pruning or label/split changes.",
+  "comparison": "Explicit cross-preparation comparison requires identical snapshot, target, item IDs and labels. Report both policies, all seeds, mean/sample-std/min/max and validation-to-test differences.",
+  "diagnostics": [
+    "precision",
+    "recall",
+    "f1",
+    "average_precision",
+    "roc_auc",
+    "fpr",
+    "confusion_matrix",
+    "prevalence",
+    "per_scenario_recall_and_FN",
+    "independent_scenario_groups",
+    "FP_account_concentration"
+  ],
+  "timing": {
+    "device": "cpu",
+    "threads": 1,
+    "warmup_runs": 1,
+    "measured_runs": 5,
+    "lstm_batch_size": 128,
+    "tabular_batch": "full fixed test cohort"
+  },
+  "minimum_free_gib": 5,
+  "test_exposure": "Write an exposure ledger on first test-byte access. After this final, same test is used evidence and cannot be claimed untouched for new model improvements.",
+  "improvement_policy": "New hypotheses use development/group-CV. A new confirmatory claim needs a genuinely independent holdout; old-test re-evaluations must be labelled exploratory."
+}

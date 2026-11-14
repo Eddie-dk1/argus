@@ -2,6 +2,11 @@
 
 Last verified: 2026-07-21.
 
+Project status updated 2026-11-14. CERT acceptance, label/group policy,
+daily/sequence preparation, frozen final and five quality increments are
+complete. [S3](s3-frozen-inference.md) is complete; [S4](s4-model-quality-plan.md)
+is planned. Network-dataset publisher facts retain the earlier review date.
+
 Argus does not store public cybersecurity datasets in Git. Public data must be
 downloaded to local ignored storage, while the repository keeps only source
 code, schemas, acquisition notes, checksums/manifests, and small synthetic test
@@ -9,13 +14,13 @@ fixtures.
 
 This document separates facts stated by dataset publishers from project
 decisions. File names and checksums must be verified against the publisher's
-manifest or bundled README after acquisition; no large dataset has been
-downloaded while preparing this plan.
+manifest or bundled README after acquisition. CERT r4.2 is now on external
+storage; this does not imply network-dataset acquisition or model evaluation.
 
 ## Project Decisions
 
-The initial diploma experiments will use the smallest useful published form of
-each dataset:
+The planned diploma sources use the smallest useful published form of each
+dataset, in this acquisition order:
 
 1. `CERT r4.2` activity logs and its answer key for the behavioral scenario;
 2. `CICIDS2017 MachineLearningCSV` flow files for the first network scenario;
@@ -26,6 +31,19 @@ Raw PCAPs, host images, and the complete CERT release collection are optional
 follow-up sources. They are not required for the first Argus model comparison.
 This keeps acquisition and preprocessing feasible without weakening the stated
 tabular/sequence research scope.
+
+CERT r4.2 and matching answers were accepted first. Acquisition of the whole
+collection remains unnecessary. The laboratory uses synthetic correctness
+fixtures and the accepted CERT baseline; network sources remain subsequent
+milestones with their own acceptance gates.
+
+Every adapter declares its analysis unit/capabilities. Synthetic events, CERT
+user-days and flows are not interchangeable. Preserve unit-to-source mappings
+and enable raw scenarios only when the affected units can be recomputed from
+supported fields. Viewing results does not imply scenario replay support.
+
+See the [post-SSD roadmap](roadmap.md#resume-after-ssd) and
+[implementation plan](spectra-lab-implementation-plan.md).
 
 ## CERT Insider Threat Test Dataset
 
@@ -48,25 +66,26 @@ tabular/sequence research scope.
 
 ### Argus scope
 
-Argus will start with release `r4.2`, a commonly studied release with a dense
-set of insider scenarios. The expected source groups are logon/logoff, device,
-file, HTTP, email, organizational/LDAP, and psychometric data. The exact files
-and columns will be accepted only after validating them against the README
-bundled with the downloaded release.
+Argus uses the accepted `r4.2` snapshot and matching answers. Activity inputs
+are logon/logoff, device, file, HTTP and email. Acceptance reconciled their
+schemas with the bundled README; organizational/psychometric metadata remain
+provenance/population information rather than default model inputs.
 
-The primary experimental entity will be a `user-day`; event sequences remain
-available for the LSTM scenario. Labels will be derived from the official
-answer key, not inferred from activity volume.
+The primary experimental entity is an active account-day. Labels follow the
+fixed observable-membership policy, with incident user and logged account kept
+separate. LSTM inputs are five active account-days with exact ordered membership;
+calendar gaps are retained through history features. This is account transfer,
+not a raw-event-sequence or temporal forecasting claim.
 
 ### Acquisition checklist
 
-- [ ] Select only `r4.2` and `answers.tar.bz2` in KiltHub instead of using
+- [x] Select only `r4.2` and `answers.tar.bz2` in KiltHub instead of using
   `Download all`.
-- [ ] Save KiltHub metadata and the bundled `r4.2` README with the local raw
-  data.
-- [ ] Record file names, byte sizes, and SHA-256 hashes in a local manifest.
+- [x] Save KiltHub metadata and the bundled `r4.2` README with the local raw
+data.
+- [x] Record file names, byte sizes, and SHA-256 hashes in a local manifest.
 - [ ] Confirm that the license and required attribution have not changed.
-- [ ] Validate the answer-key user identifiers and scenario dates before
+- [x] Validate the answer-key user identifiers and scenario dates before
   generating labels.
 
 ### Known limitations and controls

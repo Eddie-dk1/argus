@@ -8,6 +8,10 @@ __pycache__/
 future-development.md
 prompts.txt
 experiment.txt
+/EventLens.md
+.env
+.env.*
+!.env.example
 
 # Local preview/build/vendor artifacts.
 streamlitdashboardpreview.png
@@ -15,6 +19,7 @@ argusdashboardpreview*.png
 qlout/
 tmp_html/
 .vendor/
+/output/
 
 # Practice/report exports and personal academic documents.
 docs/*
@@ -39,6 +44,10 @@ data/
 # Generated model artifacts and experiment outputs.
 *.pt
 *.pth
+*.joblib
+*.pkl
+*.npz
+*.npy
 results/*.csv
 results/*.json
 results/plots/*.png

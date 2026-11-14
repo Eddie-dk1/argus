@@ -190,7 +190,10 @@ def inspect_scenario(
     if not raw_dir.is_dir():
         raise NotADirectoryError(f"Raw path is not a directory: {raw_dir}")
 
-    csv_files = sorted(path for path in raw_dir.rglob("*.csv") if path.is_file())
+    csv_files = sorted(
+        path for path in raw_dir.rglob("*.csv")
+        if path.is_file() and not path.name.startswith("._")
+    )
     source_reports: list[dict[str, Any]] = []
     matched_paths: set[Path] = set()
     missing_source_groups: list[str] = []

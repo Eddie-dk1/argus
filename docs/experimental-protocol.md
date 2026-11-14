@@ -1,12 +1,91 @@
-# Experimental Protocol v1
+# Experimental Protocol — v1 Baseline and Planned Spectra Rules
+
+Implementation update 2026-11-14: the [isolated experiment workflow](isolated-experiments.md) provides synthetic/CERT preparation IDs, exact membership, saved inputs/models, validation-only candidates and explicit final evaluation. [The first frozen CERT final](cert-r4.2-final-evaluation.md) is complete; its test is used. [Causal history v3](cert-r4.2-causal-history.md), [paired RF/IF/LSTM group-CV](cert-r4.2-group-cv-v3.md), [file/USB ablation](cert-r4.2-file-usb-v4.md) and [endpoint/HGB comparison](cert-r4.2-model-variants-v5.md) are complete on development data. Descriptions below of shared root outputs and mandatory test access apply to legacy scripts; Spectra remains future work.
 
 Status: fixed for the `argus-v0.2.0` synthetic baseline and the initial public
 dataset implementations.
+
+Integration notes updated 2026-10-27. Core v1 reference metrics/selection rules
+are unchanged. The Spectra extension below governs future workflows; it does
+not claim that candidate, search or scenario modes are implemented today.
 
 This protocol defines how Argus creates splits, selects configurations and
 thresholds, evaluates models, and records artifacts. Deviations are allowed
 only when a scenario makes a rule impossible; the deviation and its rationale
 must be committed before inspecting final test metrics.
+
+## Permanent quality and model policy
+
+The [root repository rules](../AGENTS.md) apply to all stages, including S3–S8.
+The primary goals are precision, recall, F1, PR-AUC and false alarms, with
+overfitting risk controlled; accuracy is descriptive. Before changing model
+fit, preprocessing, features, architecture or calibration, declare hypothesis,
+control, permitted data/cohort, objective, bounded budget and seeds. Preserve
+every declared result, including regressions, failed seeds and weak scenarios.
+Data corrections require source justification and an explicit version.
+
+Select models and numeric thresholds before final evaluation. Mark reused
+development folds and the consumed CERT test; independent confirmation needs
+independent data. Distinguish model-seed variation from fold variation; identical
+HGB arrays are not new independent observations. Do not pool cross-fold score
+rankings into PR-AUC. A stage states whether it contributes a new experiment,
+diagnosis, or preservation check; interface work alone does not improve accuracy.
+
+A common inference/comparison contract does not imply one winning model for
+all datasets. CERT, CICIDS2017 and CSE-CIC-IDS2018 have separate training,
+weights and selection. HGB remains the CERT research candidate, with RF/IF/LSTM
+retained as comparisons. Replacements require a predeclared comparison of
+quality, stability and cost; historical results remain available. Sequential
+models require justified event ordering and exact window membership.
+
+### S3 frozen inference amendment — 2026-11-14
+
+[S3](s3-frozen-inference.md) has three sequential parts, one per request:
+shared rules/inference, saved-result replay/diagnosis, then verified synthetic
+scenarios/CLI. Part 1 adds `load_frozen_run`, label-free `PreparedBatch`,
+`score`/`predict`, and full-window LSTM `reconstruct`. The existing scorers,
+weights, feature state and numeric thresholds remain authoritative. Inference
+does not fit, select epochs, calibrate or rank profiles. Operating bundles
+require an explicit saved profile even if one is ineligible on calibration.
+
+The historical formats imply higher-is-more-anomalous scores and `>=` decisions;
+explicit incompatible declarations are rejected. IF retains negative
+`score_samples`; LSTM retains the named window/endpoint mean MSE, CPU float32
+and inference batch size 128. Replays must retain prior dependency versions,
+CPU settings, dtype and batching. Synthetic fixture fits are functional checks,
+not new research evidence. This amendment neither launches a new CERT test
+evaluation nor asserts improved detection quality.
+
+S3 part 2 is now complete: [exact replay and diagnosis](s3-frozen-diagnostics.md)
+of all model-variants assessments and seed42 operating profiles, with diagnosis
+of all saved operating seeds. Inputs/features/IDs/membership/scores/decisions
+are checked exactly; calibration/outer metrics reproduce, including the failed
+primary budget. Reporting retains undefined quantities as null with reasons,
+separates available history from policy fallback, and separates fixed-fold
+model-seed statistics from fixed-seed fold statistics. Identical values have
+zero measured seed variation. The new report is reused-development diagnosis,
+not independent confirmation; no thresholds or active models were reselected.
+
+S3 part 3 completes [verified synthetic raw scenarios](s3-synthetic-scenarios.md)
+and `argus.py inspect/replay/diagnose/scenario`. `bytes_sent` patches preserve
+actors/time/IDs/membership, reuse frozen train state and weights, recompute all
+affected user history inside one split, and must match a full-split oracle.
+No-op tolerances are fixed before replay: float32 rtol1e-6/atol1e-7, float64
+rtol1e-12/atol1e-12, exact decisions. Base labels are separate provenance;
+variant truth is unknown and variants are excluded from benchmark metrics.
+Tiny generated fixture fits verify behavior only; research training and
+calibration remain outside S3. CERT raw what-if requires a new reaggregation
+contract; the CLI only inspects/replays its existing prepared cohorts.
+
+## Approved S4 quality cycle — not executed
+
+The [S4 plan](s4-model-quality-plan.md) extends investigation into two bounded
+improvement cycles before the UI: six HGB configurations, then controlled
+RF/LSTM alternatives. Its matrix contains at most117 new fits under a ceiling
+of120 and up to12 hours of execution. Both subcycles are fixed before new
+outer results; source data, controls, failed seeds and negative findings remain.
+Original primary validation/test are excluded. A used development outer fold
+is not an independent holdout. No S4 research training has run yet.
 
 ## Research questions
 
@@ -71,16 +150,68 @@ must not be mixed into the main table.
 
 ### CERT r4.2
 
-Primary split unit: user.
+CERT amendment 1.1 (2026-11-12): primary split unit is a connected group of
+accounts linked by an official incident; unrelated users form singleton groups.
+This preserves no-user-overlap and prevents one cross-account incident from
+crossing splits. Target approximately `60/20/20` users with seed 42, balancing
+positive-account and scenario support without breaking connected groups.
+The allocation algorithm and assignment manifest must be frozen before training.
+All events and user-days for an account remain in one split, ordered in time.
 
-Users are assigned `60/20/20` with a fixed seeded group allocation stratified
-at user level by whether the official answer key marks any malicious activity.
-All events and user-days for a user remain in one split. Events remain ordered
-inside each user.
+The fixed target is official observable membership aggregated by logged account
+and calendar day, not blanket malicious-user/interval labeling. Exact rules,
+negative-label limitations, scenario 3 handling and checked group counts are in
+[CERT label policy v1](cert-r4.2-label-policy.md). Synthetic v1 is unchanged.
 
 A secondary temporal experiment may split each eligible user's history into
 past/present/future periods, but it must be labeled `temporal-with-user-overlap`
 and cannot replace the no-user-overlap primary result.
+
+CERT history amendment v3 (2026-11-14): under the separately named
+`cert_frozen_global_causal_all_v3` policy, personal state may consume past
+observations of an unseen account, emitting the current day's features before
+adding that day. No label or attribution controls the update. Global reference
+and scaler fit remain train-only (inner-fit-only in CV). This is offline account
+transfer with causal personal history, not temporal forecasting. Existing v1/v2
+policies and frozen results remain unchanged. `primary_development` preparation
+contains original train/validation only and cannot be used by final evaluation.
+
+CERT file/USB amendment v4 (2026-11-14): the separately declared
+[step-3 ablation](cert-r4.2-file-usb-v4.md) adds three generic log-volume
+deviations and a profile-fallback flag to v3. It compares a causal 30-day
+personal reference against a frozen reference from the first five observed
+active days. Neither reference removes days using true labels. Frozen early
+profiles are not backfilled into earlier rows; global fallback/scaling remain
+inner-fit-only. Nine completed v3 candidates are reused as immutable controls;
+the same development folds do not provide independent confirmation. Previous
+observable-positive history may stratify a report after all inference, but
+cannot enter features, history filtering or selection.
+
+CERT model/score amendment v5 (2026-11-14): [increment 4](cert-r4.2-model-variants-v5.md)
+separately compares endpoint-only LSTM reconstruction error and one fixed
+HistGradientBoostingClassifier. The LSTM optimization loss remains full-window
+MSE; epoch/threshold selection uses only inner calibration with its named score.
+HGB fits the same labeled inner-fit days as RF, with fixed iteration budget and
+no automatic random validation split. It has more label information in model
+fit than IF/LSTM and is not an equal-supervision replacement claim. All four
+existing feature policies, groups, targets and endpoints are preserved; no
+test or outer-calibrated threshold is introduced. Defaults and frozen legacy
+scorers remain unchanged; new policies use explicit configuration dispatch.
+
+CERT operating-point amendment v6 (2026-11-14): [increment 5](cert-r4.2-operating-point-v6.md)
+freezes HGB rolling, matched RF rolling and the previous strongest RF frozen
+before five-seed repetition on the same development folds. The named primary
+objective maximizes calibration recall under at most one FP per 1,000 background
+active account-days, with a minimum recall of 50%. A two-FP sensitivity profile
+is declared separately and cannot replace the primary profile after scoring.
+All unique calibration-score decision boundaries plus reject-all form the
+finite threshold grid; tied scores cannot be split. Integer FP budgets use
+floor, with lower FP and higher threshold as recall tie-breakers. Infeasible
+recall is recorded without relaxing the budget. Existing F1-selected thresholds
+remain immutable controls, not silently redefined defaults. New operating
+bundles are sealed before outer access. Outer budget violations do not trigger
+selection; model seeds do not create independent groups or holdouts. No new
+test scoring is performed because independent accepted CERT data are unavailable.
 
 ### CICIDS2017
 
@@ -241,6 +372,66 @@ Run metadata includes:
 - seed and device;
 - split policy and feature-set name.
 
+## Planned Spectra: Selection and Scenario Workflows
+
+Scope lives in the [implementation plan](spectra-lab-implementation-plan.md).
+EventLens is the former name of Event Investigation inside one Spectra Lab.
+
+### Candidate studies and final evaluation
+
+- Freeze preparation, target, cohort, search space, objective, budgets, seeds
+  and benchmark conditions before trials. Retain v1 validation F1/tie-breakers
+  initially; selection-changing FPR/resource constraints require a named revision.
+- Candidates read train/validation only: no test loading, scoring or metrics.
+  Current complete training scripts require this separation before search.
+- Isolate trial inputs/models/outputs and record complete/pruned/failed/interrupted
+  states, including consumed cost. Failed trials count against the budget.
+- Select/freeze configurations before explicit final test evaluation. Never
+  choose a winner from a final-test Pareto plot and call test untouched.
+- Start with random search, then compare TPE on the same domain, compute budget,
+  stopping/pruning rules, data and objectives. Repeat search seeds independently
+  of model seeds; do not assume TPE wins.
+- Freeze sequence length/feature set initially. Later length comparisons need
+  a predeclared common population and explicit coverage differences.
+- Repeated validation use can overfit selection. Any robustness folds remain
+  within development data and preserve chronological/entity-group split rules.
+
+### Quality and resource measurements
+
+Compare quality on identical validation items. Search inference benchmarks use
+a fixed non-test cohort and declared hardware/device, batch, threads, warm-up
+and repeats. Report training, feature preparation, batch throughput, single-item
+latency and process peak RSS separately. Small timing differences within
+measurement variation are not evidence of superiority.
+
+### Reference examples and raw scenarios
+
+- Reference pools use permitted train objects only, with explicit normal and
+  context policies. A normal endpoint alone does not establish a normal window.
+- Exclude self, duplicates and overlapping members; no-match is valid.
+  Similarity is computed outside 2D plot coordinates.
+- A scenario binds a frozen model/state/schema/threshold and base object to a
+  versioned raw patch. Recompute affected dependencies through the same builder,
+  without fit or silent schema changes.
+- No-op reproduces inputs/scores/decisions within declared tolerances. Validate
+  optimized recompute against an independent full-history oracle.
+- New ground truth is unknown unless a separately declared labeling mechanism
+  determines it; base labels remain provenance only.
+- Scenario results and notes do not alter base data, labels, predictions,
+  study ranking or final-test metrics.
+- Distinguish facts, residual contributions and response to a patch. These
+  outputs do not establish real-world causality.
+- CERT user-day changes require source-field support and raw-event reaggregation;
+  missing history or unsupported fields cause explicit refusal.
+
+### Statistical independence and UI studies
+
+Predeclare cases and metrics. Group overlapping windows by entity/episode for
+uncertainty estimates; repeated seeds do not create independent datasets. UI
+studies use comparable information, equivalent tasks, balanced order and
+participant-level analysis, not independent observations per click. Describe
+pilot participants accurately rather than calling students SOC professionals.
+
 ## Reporting rules
 
 - Never describe synthetic metrics as production performance.
@@ -252,3 +443,39 @@ Run metadata includes:
 - Compare models only when their test records and target definition match.
 - Freeze a release only after its documented reproduction command succeeds from
   a clean checkout with the required data manifest.
+
+### CERT integration implementation update — 2026-11-13
+
+All three CERT preparation increments are now implemented; see the
+[exact transformation/history/window protocol](cert-r4.2-experiments.md).
+The new preparation has 71 inputs fitted/transformed with train-only state.
+Personal rolling/novelty history is causal within train; held-out users use
+frozen global fallbacks with explicit cold-start flags. Calendar gaps are
+retained, and windows span five active days. CERT LSTM uses all-background
+training windows; synthetic retains its historical endpoint-normal policy.
+Full CERT preparation and a small IF validation-only smoke candidate completed;
+real test evaluation and research model comparisons remain future work.
+
+### CERT robustness amendment — 2026-11-13
+
+The [history-control protocol](cert-r4.2-robustness.md) adds one explicitly named
+global-only policy alongside the unchanged v1 control. Both use five fixed
+model seeds. Three outer incident-group folds within primary train additionally
+check LSTM transfer; each outer fit has a separate inner group calibration set.
+Feature state and weights fit only inner train, checkpoint/threshold select on
+inner calibration, and frozen assessment uses outer fold only. Primary
+validation and real test do not enter these development folds. This is a
+bounded control experiment; no automatic parameter search, test-driven tuning
+or best-seed selection is introduced. CV cannot repair scenario 3's limited
+independent-group support.
+
+### CERT final exposure — 2026-11-13
+
+The [frozen final protocol](cert-r4.2-final-evaluation.md) completed all 30
+predeclared candidates on the aligned real CERT test. Numeric thresholds,
+epochs, weights and feature states were unchanged; source/dependency and
+artifact bindings were verified before test access. Current test is now used.
+It remains valid evidence for these frozen configurations and reproducibility
+checks. New configurations require separate development validation and an
+independent holdout for a new confirmatory claim; old-test re-evaluation must
+be labelled exploratory. No new model is selected by its test ranking.

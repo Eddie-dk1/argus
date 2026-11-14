@@ -1,31 +1,58 @@
 # Argus
 
-Argus is an academic research prototype for anomaly detection in network
-activity and user behavior. It provides a reproducible synthetic benchmark that
-compares a supervised Random Forest, an unsupervised Isolation Forest, and a
-sequence-based LSTM Autoencoder on one exactly aligned evaluation cohort.
+Argus is an academic research project for anomaly detection in user behavior
+and network activity. The current priority is **model quality, reliable
+comparisons and reproducible evidence**.
 
-Argus is not a production IDS/UEBA platform. The current release is a research
-foundation: deterministic data generation, leakage-aware preprocessing,
-validation-only threshold selection, experiment manifests, metrics, plots, and
-short anomaly explanations.
+## Current status
 
-## Release Status
+Updated **2026-11-14**. The published `argus-v0.2.0` release is the historical
+synthetic reference. Current development includes CERT research and the
+completed S3 frozen runtime; a new release is not implied by these changes.
 
-`argus-v0.2.0` stabilizes the synthetic pipeline and prepares the repository for
-public data without downloading the 200+ GiB dataset collection.
+| Area | State |
+|---|---|
+| Synthetic benchmark | Deterministic generation, causal features, aligned RF/IF/LSTM evaluation |
+| CERT r4.2 | Accepted local snapshot, audited observable labels, incident-group split, daily preparation, frozen final and five controlled quality increments |
+| S3 | Complete: common inference, exact replay, quality diagnosis and verified synthetic raw scenarios |
+| S4 | Agreed next: error investigation and two bounded model-improvement cycles; not started |
+| Spectra Lab UI | Planned after the research foundations; model quality has priority |
+| CICIDS2017 / CSE-CIC-IDS2018 | Contracts and acquisition research; not yet accepted or evaluated |
 
-- Synthetic scenario: implemented, tested, and reproducible from a committed
-  config.
-- CERT r4.2, CICIDS2017, CSE-CIC-IDS2018: researched and represented by storage,
-  schema-inspection, and feature contracts; no real data is bundled or claimed
-  as evaluated.
-- Next active-data milestone: CERT r4.2 after suitable external storage is
-  available.
+The [seven-part S4 plan](docs/s4-model-quality-plan.md) covers HGB context
+features/regularization, RF and LSTM alternatives, and saved controls. Its
+matrix has at most 117 new research fits, an overall ceiling of 120 and up to 12
+hours of experiment execution. These experiments have **not been run**.
 
-## Quick Start
+See the [roadmap](docs/roadmap.md) and
+[stage assessment](docs/cert-r4.2-stage-assessment.md).
 
-Create an isolated Python environment and install the dependencies:
+## Current CERT quality
+
+HGB rolling is the research candidate. RF, IF and both LSTM score policies
+remain reproducible comparisons. The table uses seed 42 and pooled decisions
+from three reused development group folds: **196,765 endpoints, 646 observable
+positives**. Thresholds come from separate inner calibration.
+
+| HGB profile | Precision | Recall | F1 | TP | FP | FN | FP/1,000 background days |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Primary FP1/1,000 | 52.23% | 59.91% | 0.5580 | 387 | 354 | 259 | 1.805 |
+| Unchanged legacy F1 control | 59.34% | 60.99% | 0.6015 | 394 | 270 | 252 | 1.377 |
+
+Mean within-fold PR-AUC is 0.7056; cross-fold score rankings are not pooled.
+The primary requirement, **FP≤1/1,000 and recall≥50% together**, fails on all
+three unique outer folds. All five HGB seeds produce identical scores;
+repetition does not add independent evidence. Scenario 3 recall is 6/32 with
+only one independent connected group.
+
+The original CERT test was used on 2026-11-13. Improved HGB results are reused
+**development evidence**, not independent confirmation or production IDS
+performance. The legacy F1 profile has not been promoted after examining outer
+results. Details: [model variants](docs/cert-r4.2-model-variants-v5.md),
+[operating points](docs/cert-r4.2-operating-point-v6.md),
+[S3 diagnosis](docs/s3-frozen-diagnostics.md).
+
+## Setup
 
 ```bash
 python3 -m venv .venv
@@ -34,184 +61,118 @@ python3 -m pip install --upgrade pip
 python3 -m pip install -r requirements.txt
 ```
 
-Run the complete reference pipeline:
+Datasets and model weights are not included. Public sources require their own
+acceptance manifests and local storage; see [dataset contracts](docs/datasets.md)
+and [storage policy](docs/data-storage.md). `ARGUS_DATA_ROOT` must point to an
+existing directory when configured.
+
+## Isolated experiments
+
+For new experiments, choose an **existing** artifact root. Every command
+creates a separate UUID directory with checksummed inputs, state and results.
+
+```bash
+python3 src/experiment.py --root "$ARTIFACT_ROOT" prepare \
+  --config configs/synthetic_v0.2.json
+python3 src/experiment.py --root "$ARTIFACT_ROOT" candidate \
+  --preparation "$PREPARATION" --model random_forest
+# After configuration/threshold selection is frozen:
+python3 src/experiment.py --root "$ARTIFACT_ROOT" final \
+  --preparation "$PREPARATION" --candidate "$CANDIDATE"
+```
+
+Candidate reads train/validation; final evaluation is explicit. CERT development
+preparations use separate assessment cohorts and prohibit real-test access.
+Read the [isolated workflow](docs/isolated-experiments.md) and
+[experimental protocol](docs/experimental-protocol.md) before launching research.
+
+## Frozen runtime and scenario CLI
+
+```bash
+python3 src/argus.py --root "$ARTIFACT_ROOT" inspect --run "$CANDIDATE"
+python3 src/argus.py --root "$ARTIFACT_ROOT" replay --run "$CANDIDATE"
+python3 src/argus.py --root "$ARTIFACT_ROOT" replay \
+  --run "$OPERATING_BUNDLE" --profile fp1_per_1000 \
+  --source "$SAVED_ASSESSMENT" --role assessment
+python3 src/argus.py --root "$ARTIFACT_ROOT" scenario \
+  --run "$SYNTHETIC_CANDIDATE" --preparation "$SYNTHETIC_PREPARATION" \
+  --position earlier --operation double
+python3 src/argus.py --root "$ARTIFACT_ROOT" diagnose \
+  --model-variants "$MODEL_VARIANTS_SERIES" \
+  --operating-points "$OPERATING_POINT_SERIES"
+```
+
+Variables identify specific sealed artifacts. Operating bundles require an
+explicit profile. Frozen inference preserves weights, feature order, window
+membership, score policy, dtype and numeric thresholds; it performs no fit or
+threshold selection.
+
+Synthetic scenarios support raw `bytes_sent` at an endpoint or earlier window
+member: no-op, double, zero or a finite nonnegative value. Full affected-user
+history is recomputed through frozen state and checked against a separate
+full-split oracle. Variant ground truth is unknown; variants never enter the
+original benchmark metrics. CERT currently supports saved-input inspection
+and replay; raw what-if needs a separate reaggregation contract.
+
+See [inference](docs/s3-frozen-inference.md),
+[diagnosis](docs/s3-frozen-diagnostics.md) and
+[scenario protocol](docs/s3-synthetic-scenarios.md).
+
+## Historical synthetic reference
+
+The complete legacy reproduction command is:
 
 ```bash
 ./run_all.sh
+python3 src/build_reference_snapshot.py
 ```
 
-Run a faster tabular-only check:
+It trains/calibrates models, evaluates test and writes shared outputs. Use a
+separate project copy for regression; new candidate studies use the isolated
+workflow above.
 
-```bash
-./run_all.sh --skip-autoencoder
-```
+The v0.2 reference has 30,000 events and 5,600 common test endpoints, including
+361 anomalies, with a chronological 60/20/20 split and seed 42.
 
-Reuse an existing generated raw file:
+| Model | Precision | Recall | F1 | PR-AUC |
+|---|---:|---:|---:|---:|
+| Random Forest | 1.000 | 0.889 | 0.941 | 1.000 |
+| Isolation Forest | 0.393 | 0.496 | 0.439 | 0.403 |
+| LSTM Autoencoder | 0.443 | 0.399 | 0.420 | 0.351 |
 
-```bash
-./run_all.sh --skip-generate
-```
+These synthetic families are strongly separable, especially for RF. The table
+is an engineering reference and must not be compared with CERT as a shared
+quality scale. The compact [reference snapshot](results/baseline_reference/)
+remains unchanged.
 
-The default experiment is fully described by
-[`configs/synthetic_v0.2.json`](configs/synthetic_v0.2.json). Command-line model
-overrides are intended for declared experiments, but the test split must not be
-used to choose them.
-
-## Reference Result
-
-The v0.2 reference run uses 30,000 synthetic events, a chronological `60/20/20`
-split, seed `42`, and a common test cohort of 5,600 sequence endpoints. That
-cohort contains 361 anomalous events (6.45%). Thresholds and LSTM epoch are
-selected on validation only.
-
-| Model | Precision | Recall | F1 | PR-AUC | ROC-AUC | FPR |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Random Forest | 1.000 | 0.889 | 0.941 | 1.000 | 1.000 | 0.000 |
-| Isolation Forest | 0.393 | 0.496 | 0.439 | 0.403 | 0.886 | 0.053 |
-| LSTM Autoencoder | 0.443 | 0.399 | 0.420 | 0.351 | 0.831 | 0.035 |
-
-These numbers are a controlled engineering result, not evidence of production
-performance. In particular, the near-perfect Random Forest ranking indicates
-that the generated anomaly families remain strongly separable. Multi-seed
-stability and public-dataset validation are later research stages.
-
-The compact release snapshot is in
-[`results/baseline_reference/`](results/baseline_reference/), including config,
-data hash, split/feature manifests, validation/test metrics, timing, and feature
-importance.
-
-## What the Pipeline Does
-
-```text
-committed config
-      |
-      v
-deterministic synthetic events
-      |
-      v
-chronological split before fitting features
-      |
-      +---------------------------+
-      |                           |
-      v                           v
-tabular endpoint rows       per-user sequences
-      |                           |
-      v                           v
-Random/Isolation Forest     LSTM Autoencoder
-      |                           |
-      +-------------+-------------+
-                    v
-validation threshold -> one common test cohort
-                    v
-metrics, timing, errors, plots, explanations
-```
-
-The generator models four anomaly families:
-
-- `brute_force_login`;
-- `unusual_night_activity`;
-- `data_exfiltration`;
-- `unusual_ip_change`.
-
-Features are causal: rolling values use earlier events only. Encoders, normal
-profiles, and scalers are fitted on train only. Raw user/IP identifiers and
-labels are provenance, not default model inputs.
-
-## External Dataset Storage
-
-Synthetic data defaults to the ignored repository `data/` directory. Public
-datasets should be kept on an external SSD by setting an existing mount path:
-
-```bash
-export ARGUS_DATA_ROOT="/Volumes/ArgusData/argus-data"
-python3 src/check_data_storage.py \
-  --scenario cert_r4_2 \
-  --required-gib 100 \
-  --create-scenario-directories
-```
-
-If `ARGUS_DATA_ROOT` is set but the volume is missing, Argus fails instead of
-silently creating a large internal-drive copy. The exact storage and capacity
-procedure is in the [data storage policy](docs/data-storage.md).
-
-After files are acquired from their publishers, inspect a raw directory before
-writing preprocessing code:
-
-```bash
-python3 src/inspect_dataset.py --scenario cert_r4_2
-python3 src/inspect_dataset.py --scenario cicids2017
-python3 src/inspect_dataset.py --scenario cse_cic_ids2018
-```
-
-The CERT contract is explicitly provisional until it is reconciled with the
-README bundled in the chosen r4.2 release.
-
-## Reproducibility Rules
-
-- Split raw records before fitting preprocessing state.
-- Use validation for features, hyperparameters, early stopping, and thresholds.
-- Evaluate test only after the configuration is frozen.
-- Compare models only on rows with identical `user_id`, `timestamp`, and target.
-- Report precision, recall, F1, PR-AUC, ROC-AUC, FPR, support, prevalence, and
-  timing.
-- Keep data hashes, resolved config, environment, split report, feature
-  manifest, threshold search, errors, and plots per run.
-- Treat synthetic metrics and explanations as limited evidence.
-
-The complete rules are in the [experimental protocol](docs/experimental-protocol.md).
-Old test-informed autoencoder sweep scripts were removed in v0.2; future search
-spaces must be bounded in a committed config and selected on validation only.
-
-## Tests
-
-Run the unit and contract checks:
+## Verification
 
 ```bash
 PYTHONPATH=src python3 -m unittest discover -s tests -v
+python3 -m compileall -q src tests
 bash -n run_all.sh
+git diff --check
 ```
 
-The tests cover generator determinism, split invariants, target leakage,
-unknown categories, endpoint sequence labels, storage failure behavior, schema
-aliases, malformed input, and chunked CSV loading.
+S3 acceptance passed 104 tests, 30 synthetic scenario checks and exact saved
+CERT replay. Full legacy regression in a temporary copy preserved RF/IF/LSTM
+metrics. Source data, checkpoints, thresholds and state remain authoritative.
 
-## Project Layout
+## Project scope and documentation
 
-```text
-argus/
-├── configs/                 # versioned experiment configurations
-├── docs/                    # protocol, datasets, storage, features, literature
-├── results/
-│   ├── baseline_reference/  # compact v0.2 reproducibility snapshot
-│   └── plots/               # selected reference plots
-├── src/
-│   ├── datasets/            # scenario contracts, inspection, chunked loading
-│   ├── data_paths.py        # ARGUS_DATA_ROOT resolution
-│   ├── generate_data.py
-│   ├── preprocessing.py
-│   ├── train_baseline.py
-│   ├── train_lstm_autoencoder.py
-│   ├── evaluate.py
-│   └── experiment_tracking.py
-├── tests/                   # unit tests and tiny synthetic schema fixtures
-├── run_all.sh
-└── requirements.txt
-```
+Argus is a research prototype. Spectra Lab is the planned single research
+workspace; EventLens is its historical investigation name. There is no shipped
+web UI, live collector or production SIEM integration.
 
-Generated datasets, weights, full predictions, and timestamped experiment runs
-are ignored. They can be rebuilt from code, config, and publisher data.
+- [Permanent repository rules](AGENTS.md) and [contributing](CONTRIBUTING.md)
+- [Architecture](docs/architecture.md), [roadmap](docs/roadmap.md)
+- [Next S4 quality plan](docs/s4-model-quality-plan.md)
+- [Dataset research](docs/datasets.md), [feature contracts](docs/features.md)
+- [Spectra implementation plan](docs/spectra-lab-implementation-plan.md)
+- [Design requirements](docs/design.md), [literature](docs/literature-review.md)
 
-## Documentation
+Git contains code, tests, configs, protocols and the existing compact synthetic
+reference. Downloaded data, weights, full predictions, experiment directories,
+local reports, presentations and design previews stay outside version control.
 
-- [Architecture](docs/architecture.md)
-- [Dataset research](docs/datasets.md)
-- [Data storage policy](docs/data-storage.md)
-- [Experimental protocol](docs/experimental-protocol.md)
-- [Scenario feature map](docs/features.md)
-- [Working literature review](docs/literature-review.md)
-- [Roadmap](docs/roadmap.md)
-- [Contributing](CONTRIBUTING.md)
-
-## License
-
-Argus is licensed under the [MIT License](LICENSE).
+Argus code is licensed under [MIT](LICENSE). Dataset terms are separate.

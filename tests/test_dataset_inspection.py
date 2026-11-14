@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import tempfile
+import shutil
 import unittest
 from pathlib import Path
 
@@ -37,6 +38,31 @@ class DatasetInspectionTests(unittest.TestCase):
 
         self.assertEqual(canonical["total_fwd_packets"], "Tot Fwd Pkts")
         self.assertEqual(canonical["flow_bytes_per_second"], "Flow Byts/s")
+
+    def test_cert_publisher_file_schema_has_no_activity(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            raw = Path(directory) / "raw"
+            shutil.copytree(FIXTURES_ROOT / "cert_r4_2" / "raw", raw)
+            (raw / "file.csv").write_text(
+                "id,date,user,pc,filename,content\n"
+                "F1,01/02/2010 08:10:00,AAA0001,PC1,a.txt,example\n"
+            )
+            (raw / "._file.csv").write_bytes(b"\x00\xffAppleDouble")
+            report = inspect_scenario("cert_r4_2", raw, sample_rows=10)
+            self.assertTrue(report["valid_schema"], report)
+            chunks = list(iter_scenario_chunks("cert_r4_2", raw, chunk_size=10))
+            files = [x for x in chunks if x["__source_group"].iloc[0] == "file"]
+            self.assertEqual(len(files), 1)
+            self.assertNotIn("activity", files[0].columns)
+
+    def test_cert_core_identity_remains_required(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            raw = Path(directory) / "raw"
+            shutil.copytree(FIXTURES_ROOT / "cert_r4_2" / "raw", raw)
+            (raw / "file.csv").write_text("date,user,pc,filename\n01/02/2010,U1,P1,a.txt\n")
+            report = inspect_scenario("cert_r4_2", raw, sample_rows=10)
+            self.assertFalse(report["valid_schema"])
+            self.assertIn("file.csv", report["invalid_files"])
 
     def test_sample_quality_signals_are_reported(self) -> None:
         cse_report = self.inspect_fixture("cse_cic_ids2018")

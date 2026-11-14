@@ -32,6 +32,7 @@ except ModuleNotFoundError as error:
     ) from error
 
 from experiment_tracking import create_run_directory
+from experiment_tracking import finalize_run_artifacts
 from experiment_tracking import save_run_results
 from features import build_sequences
 from utils import DEFAULT_CONFIG_PATH
@@ -530,6 +531,20 @@ def main() -> None:
         timing=timing_payload,
         error_analysis=errors,
         plot_paths=(distribution_plot, confusion_plot, roc_plot),
+    )
+
+    finalize_run_artifacts(
+        run_dir, predictions=outputs,
+        model_writer=lambda path: torch.save(model.state_dict(), path),
+        model_filename="model.pt",
+        inference_contract={
+            "model": "lstm_autoencoder", "feature_columns": feature_columns,
+            "input_size": len(feature_columns), "hidden_size": hidden_size,
+            "sequence_length": sequence_length, "threshold": best_threshold,
+            "score": "mean_squared_reconstruction_error",
+            "decision": "score >= threshold",
+        },
+        feature_state_path=PROCESSED_DIR / "feature_state.json",
     )
 
     print(f"Saved LSTM-Autoencoder metrics to: {metrics_path}")

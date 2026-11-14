@@ -1,0 +1,43 @@
+{
+  "plan_id": "cert_r4_2_fixed_baselines_v1",
+  "fixed_on": "2026-11-13",
+  "scenario": "cert_r4_2",
+  "preparation_id": "cert_preparation_8488758ce2e94ed8b57bbb9d10dc651a",
+  "preparation_manifest_sha256": "2dfc59f4dfb78a0e1b3605c14313d8b733c833e59fee54e2ed21439ec20e9dd6",
+  "candidate_config": "configs/cert_r4_2_experiment_v1.json",
+  "candidate_config_sha256": "22d4177c38fdf316b9c7a06e37d143b1676866edce9a1ac6dbd9de1ce33be80b",
+  "target": "endpoint_account_day_observable",
+  "sequence_length": 5,
+  "feature_count": 71,
+  "development_seed": 42,
+  "repeat_model_seeds": [7, 21, 42, 84, 168],
+  "split_seed": 42,
+  "models": ["random_forest", "isolation_forest", "lstm_autoencoder"],
+  "configurations_per_family": 1,
+  "configuration_search": false,
+  "selection_order": ["validation_f1_desc", "validation_recall_desc", "validation_fpr_asc", "threshold_asc"],
+  "threshold_rule": "score >= threshold; validation percentiles from candidate_config",
+  "seed_policy": "Repeat model randomness only; preparation, split, features and endpoint cohorts stay frozen. Report every seed, never choose the best seed.",
+  "execution": "Sequential CPU candidates, sklearn n_jobs=1; OMP/BLAS thread limits=1",
+  "validation_benchmark": {
+    "cohort": "all 64254 validation endpoints, including 180 positives",
+    "input": "already prepared matrix; loading and feature preparation excluded",
+    "warmup_runs": 1,
+    "measured_runs": 5,
+    "tabular_batch": "entire validation cohort",
+    "lstm_batch_size": 128
+  },
+  "steps": [
+    {"number": 1, "work": "Freeze plan; RF and IF train/validation baselines, seed 42; verify artifacts and reload."},
+    {"number": 2, "work": "LSTM train/validation baseline, seed 42, identical endpoint cohort."},
+    {"number": 3, "work": "Complete five-seed repeats for all families; freeze all candidate IDs, checkpoints and thresholds before test."},
+    {"number": 4, "work": "Explicit frozen final evaluation for every family/seed, aligned comparison, timing, scenario errors and mean/std/min/max report."}
+  ],
+  "limitations": [
+    "Observable membership is the target; background is not independently confirmed benign behavior.",
+    "Account holdout uses personal causal train histories and frozen global held-out fallbacks; this availability difference remains a limitation.",
+    "Scenario 3 has no validation support and only one independent test group.",
+    "Seeds are repeated models on one split, not independent dataset samples or confidence intervals.",
+    "The earlier eight-tree IF candidate is a technical smoke run and is excluded from the benchmark."
+  ]
+}

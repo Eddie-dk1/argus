@@ -57,7 +57,7 @@ LSTM_FEATURE_COLUMNS = [
 def sort_events(data_frame: pd.DataFrame) -> pd.DataFrame:
     frame = data_frame.copy()
     frame["timestamp"] = pd.to_datetime(frame["timestamp"], errors="raise")
-    frame = frame.sort_values(["timestamp", "user_id"]).reset_index(drop=True)
+    frame = frame.sort_values(["timestamp", "user_id"] + (["event_id"] if "event_id" in frame else []), kind="stable").reset_index(drop=True)
     frame["hour"] = frame["timestamp"].dt.hour.astype(int)
     frame["is_weekend"] = (frame["timestamp"].dt.dayofweek >= 5).astype(int)
     frame["label"] = frame["label"].astype(int)
@@ -276,8 +276,17 @@ def build_sequences(
     labels: list[int] = []
     user_ids: list[str] = []
     timestamps: list[str] = []
+    item_ids: list[str] = []
+    member_ids: list[list[str]] = []
 
-    sorted_frame = data_frame.sort_values(["user_id", "timestamp"]).reset_index(drop=True)
+    if sequence_length <= 0:
+        raise ValueError("sequence_length must be positive")
+    data_frame = data_frame.copy()
+    if "event_id" not in data_frame:
+        data_frame["event_id"] = [f"fixture:{i}" for i in range(len(data_frame))]
+    if data_frame["event_id"].isna().any() or data_frame["event_id"].duplicated().any():
+        raise ValueError("Event IDs must be unique and non-null")
+    sorted_frame = data_frame.sort_values(["user_id", "timestamp", "event_id"], kind="stable").reset_index(drop=True)
     sorted_frame["timestamp"] = pd.to_datetime(sorted_frame["timestamp"])
 
     for user_id, user_frame in sorted_frame.groupby("user_id"):
@@ -289,6 +298,9 @@ def build_sequences(
         for start_index in range(0, len(user_frame) - sequence_length + 1):
             stop_index = start_index + sequence_length
             sequences.append(values[start_index:stop_index])
+            members = user_frame["event_id"].iloc[start_index:stop_index].astype(str).tolist()
+            item_ids.append(members[-1])
+            member_ids.append(members)
             # The sequence predicts whether its endpoint event is anomalous.
             # This keeps sequence and tabular evaluation targets aligned.
             labels.append(int(window_labels[stop_index - 1]))
@@ -297,12 +309,16 @@ def build_sequences(
 
     if not sequences:
         return {
+            "item_ids": np.empty((0,), dtype="<U1"),
+            "member_ids": np.empty((0, sequence_length), dtype="<U1"),
             "X": np.empty((0, sequence_length, len(feature_columns)), dtype=np.float32),
             "y": np.empty((0,), dtype=np.int64),
             "user_ids": np.empty((0,), dtype="<U1"),
             "timestamps": np.empty((0,), dtype="<U1"),
         }
     return {
+        "item_ids": np.asarray(item_ids),
+        "member_ids": np.asarray(member_ids),
         "X": np.stack(sequences).astype(np.float32),
         "y": np.asarray(labels, dtype=np.int64),
         "user_ids": np.asarray(user_ids),

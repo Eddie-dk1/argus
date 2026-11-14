@@ -7,6 +7,7 @@ import platform
 import shutil
 import subprocess
 import sys
+from uuid import uuid4
 from datetime import datetime
 from datetime import timezone
 from pathlib import Path
@@ -113,7 +114,7 @@ def create_run_directory(
     config_hash = payload_sha256(resolved_config)
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     safe_model = "".join(character if character.isalnum() else "_" for character in model).strip("_")
-    run_id = f"{timestamp}_{safe_model}_{config_hash[:8]}"
+    run_id = f"{timestamp}_{safe_model}_{config_hash[:8]}_{uuid4().hex[:12]}"
     run_dir = RESULTS_DIR / "experiments" / scenario / run_id
     suffix = 1
     while run_dir.exists():
@@ -144,6 +145,34 @@ def create_run_directory(
     save_json(feature_manifest, run_dir / "feature_manifest.json")
     save_json(metadata, run_dir / "run_metadata.json")
     return run_dir, metadata
+
+
+def finalize_run_artifacts(
+    run_dir: Path, *, predictions: pd.DataFrame, model_writer,
+    model_filename: str, inference_contract: dict[str, Any],
+    feature_state_path: Path,
+) -> None:
+    """Publish a run-local inference bundle once; failures never look complete.
+
+    The model writer must serialize the in-memory model, not a shared root file.
+    This preserves completed sequential runs; legacy root outputs are still
+    compatibility views and are not safe for concurrent training.
+    """
+    bundle = run_dir / "inference"
+    bundle.mkdir(exist_ok=False)
+    if Path(model_filename).name != model_filename:
+        raise ValueError("Model filename must be a basename")
+    predictions.to_csv(bundle / "predictions_test.csv", index=False)
+    shutil.copy2(feature_state_path, bundle / "feature_state.json")
+    save_json(inference_contract, bundle / "contract.json")
+    model_writer(bundle / model_filename)
+    files = sorted(p for p in run_dir.rglob("*") if p.is_file())
+    manifest = {p.relative_to(run_dir).as_posix(): {
+        "sha256": file_sha256(p), "size_bytes": p.stat().st_size,
+    } for p in files}
+    # A failed/partial bundle has no completion marker and must not be loaded.
+    with (run_dir / "complete.json").open("x") as stream:
+        json.dump({"status": "complete", "artifacts": manifest}, stream, indent=2)
 
 
 def save_run_results(

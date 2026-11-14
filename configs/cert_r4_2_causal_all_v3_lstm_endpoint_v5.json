@@ -1,0 +1,62 @@
+{
+  "scenario": "cert_r4_2",
+  "config_version": "cert_daily_causal_all_v3_lstm_endpoint_v5",
+  "seed": 42,
+  "generator": {},
+  "split": {
+    "strategy": "frozen_connected_accounts"
+  },
+  "features": {
+    "sequence_length": 5,
+    "history_policy": "cert_frozen_global_causal_all_v3"
+  },
+  "baseline": {
+    "random_forest": {
+      "n_estimators": 200,
+      "max_depth": 10,
+      "class_weight": "balanced"
+    },
+    "isolation_forest": {
+      "n_estimators": 200
+    },
+    "threshold_percentiles": [
+      90,
+      95,
+      97,
+      98,
+      99,
+      99.5,
+      99.7,
+      99.8,
+      99.9,
+      99.95,
+      99.99
+    ]
+  },
+  "lstm_autoencoder": {
+    "hidden_size": 32,
+    "epochs": 10,
+    "batch_size": 128,
+    "learning_rate": 0.001,
+    "threshold_percentiles": [
+      90,
+      95,
+      97,
+      98,
+      99,
+      99.5,
+      99.7,
+      99.8,
+      99.9,
+      99.95,
+      99.99
+    ],
+    "early_stopping_patience": 5,
+    "selection_metric": "f1",
+    "score_policy": "endpoint_mean_mse_v2"
+  },
+  "timing": {
+    "warmup_runs": 1,
+    "measured_runs": 5
+  }
+}

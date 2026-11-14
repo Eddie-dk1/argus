@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 from pathlib import Path
 from typing import Any
 
@@ -104,6 +105,8 @@ def main() -> None:
             "Raw data not found. Run `python3 src/generate_data.py` first."
         )
     raw_frame = pd.read_csv(input_path)
+    snapshot_id = hashlib.sha256(input_path.read_bytes()).hexdigest()
+    raw_frame["event_id"] = [f"{snapshot_id}:{i}" for i in range(len(raw_frame))]
     split_config = config["split"]
     splits = chronological_split(
         raw_frame,
