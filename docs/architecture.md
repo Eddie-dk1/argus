@@ -1,14 +1,17 @@
 # Architecture
 
-Implementation update 2026-11-14: the [isolated experiment workflow](isolated-experiments.md) provides synthetic/CERT preparations, exact membership, saved inputs/models, validation-only candidates and explicit final evaluation. CERT frozen final and quality increments 1–4 are complete; [endpoint/HGB variants](cert-r4.2-model-variants-v5.md) are explicit optional extensions. Descriptions below of shared root outputs and mandatory test access apply to legacy scripts; dated progress notes retain their original stage scope. Spectra remains future work.
+Updated 2026-11-14. The [isolated workflow](isolated-experiments.md) implements
+synthetic/CERT preparation, stable identities, saved inputs/models,
+validation-only candidates and explicit frozen evaluation. CERT final and all
+five quality increments are complete within their declared scope.
+[S3](s3-frozen-inference.md) is complete: common inference, exact replay,
+diagnosis and verified synthetic scenarios through `src/argus.py`.
 
-Status: implemented synthetic research pipeline plus public-dataset preparation
-contracts for `argus-v0.2.0`.
+The [next S4](s4-model-quality-plan.md) prioritizes error investigation and two
+bounded model-improvement cycles. Spectra UI and general study automation remain
+planned. Historical release notes below retain their original stage scope.
 
-Target architecture updated 2026-10-27. The inventory below describes current
-code; the planned Spectra section describes future changes.
-
-## Data Flow
+## Legacy synthetic Data Flow
 
 ```text
 Config + data root
@@ -62,10 +65,11 @@ Config + data root
   CSV iteration.
 - `src/inspect_dataset.py` exposes inspection as a scenario-aware CLI.
 
-The CERT core schema has been checked against bundled documentation and headers.
-`src/datasets/cert_labels.py` implements the accepted answer index, exact-row
-membership checks, positive account-days and incident-connected account groups;
-actual split allocation and full user-day preparation are still pending.
+The CERT core schema is checked against bundled documentation and headers.
+The adapters implement the accepted answer index, exact-row membership,
+positive account-days, incident-connected split and full daily preparation.
+Frozen global/causal/file-USB feature policies and sequence membership are
+implemented and evaluated on the declared development cohorts.
 CICIDS contracts intentionally define only a stable minimum; the full
 feature list is discovered and frozen from actual publisher files.
 
@@ -78,18 +82,27 @@ feature list is discovered and frozen from actual publisher files.
 - `src/features.py` owns causal rolling features, normal-profile deviations,
   categorical unknown handling, and endpoint sequence labels.
 
-### Training and evaluation
+### Isolated training, evaluation and runtime
+
+- `src/experiment.py` and the CERT runners own per-preparation candidates,
+  checkpoints, exact arrays, separate calibration/assessment and lineage.
+- `src/inference.py` provides frozen RF/IF/HGB/LSTM score/predict and LSTM
+  reconstruction. It performs no training or threshold selection.
+- `src/argus.py` exposes inspect/replay/diagnose/scenario with isolated outputs;
+  raw scenarios currently support synthetic bytes_sent only.
+
+### Legacy reference commands
 
 - `src/train_baseline.py` fits Random Forest and Isolation Forest, calibrates
   thresholds on validation, and exports importance, errors, timing, and plots.
 - `src/train_lstm_autoencoder.py` fits normal train sequences, chooses its epoch
   and reconstruction threshold on validation, and evaluates frozen state on
   test.
-- `src/evaluate.py` checks sorted user/time/label cohorts. Stable item identity
-  is required in the planned contract.
-- `src/experiment_tracking.py` writes separate metrics/metadata directories.
-  Full root predictions and the LSTM checkpoint can still be overwritten;
-  immutable model/input/prediction artifacts are planned.
+- `src/evaluate.py` checks sorted user/time/label cohorts for this legacy route.
+  Stable IDs and ordered membership are enforced in the isolated workflow.
+- `src/experiment_tracking.py` writes run metadata and legacy inference bundles.
+  Shared root outputs can still be overwritten by legacy commands; isolated
+  candidates/evaluations preserve their own immutable artifacts.
 - `src/explain_anomalies.py` combines model flags with train-normal profile
   deviations; it does not infer an explanation from the true target.
 
@@ -142,9 +155,10 @@ frozen run -> investigation -> valid raw patch -> frozen feature recompute
                                              -> same model and threshold
 ```
 
-Current complete training scripts evaluate test on every invocation; they need
-a train/validate-only candidate mode before search. Trial outputs must be
-isolated, with no stale models or root CSV reuse.
+Legacy complete training scripts evaluate test on every invocation. The
+implemented isolated candidate mode supplies the train/validate-only boundary
+for future studies. General search, jobs and the frontend are future work;
+trials must preserve this existing isolation.
 
 Shared contracts carry snapshot, preparation, analysis-item, sequence, cohort,
 run and study identities. Synthetic items are events; CERT user-days require

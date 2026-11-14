@@ -115,7 +115,7 @@ batch, перенос bundle и табличный inference при запрещ
 этого пункта; он не включает прежние незакоммиченные изменения. Общий commit
 или push не создаётся. Данные/веса с SSD и опубликованный synthetic reference
 остаются исходными. Полная диагностика выполнена в [пункте 2](s3-frozen-diagnostics.md).
-Raw scenarios/CLI пункта 3 требуют следующего запроса.
+Raw scenarios/CLI завершены в [пункте 3](s3-synthetic-scenarios.md).
 
 Для будущего no-op raw recompute заранее сохраняются допуски: float32
 `rtol=1e-6, atol=1e-7`; float64 `rtol=1e-12, atol=1e-12`, решения точные.

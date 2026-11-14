@@ -2,9 +2,10 @@
 
 Last verified: 2026-07-21.
 
-Acquisition sequence aligned with Spectra Lab on 2026-10-27. CERT local
-acquisition/audit and [label policy v1](cert-r4.2-label-policy.md) completed
-2026-11-12. Network-dataset publisher facts retain the earlier review date.
+Project status updated 2026-11-14. CERT acceptance, label/group policy,
+daily/sequence preparation, frozen final and five quality increments are
+complete. [S3](s3-frozen-inference.md) is complete; [S4](s4-model-quality-plan.md)
+is planned. Network-dataset publisher facts retain the earlier review date.
 
 Argus does not store public cybersecurity datasets in Git. Public data must be
 downloaded to local ignored storage, while the repository keeps only source
@@ -31,10 +32,10 @@ follow-up sources. They are not required for the first Argus model comparison.
 This keeps acquisition and preprocessing feasible without weakening the stated
 tabular/sequence research scope.
 
-After SSD setup, accept CERT r4.2 and matching answers first. Do not acquire the
-whole collection or all three sources simultaneously. The first laboratory uses
-synthetic correctness fixtures and an accepted CERT baseline; network sources
-remain separate subsequent milestones.
+CERT r4.2 and matching answers were accepted first. Acquisition of the whole
+collection remains unnecessary. The laboratory uses synthetic correctness
+fixtures and the accepted CERT baseline; network sources remain subsequent
+milestones with their own acceptance gates.
 
 Every adapter declares its analysis unit/capabilities. Synthetic events, CERT
 user-days and flows are not interchangeable. Preserve unit-to-source mappings
@@ -65,15 +66,16 @@ See the [post-SSD roadmap](roadmap.md#resume-after-ssd) and
 
 ### Argus scope
 
-Argus will start with release `r4.2`, a commonly studied release with a dense
-set of insider scenarios. The expected source groups are logon/logoff, device,
-file, HTTP, email, organizational/LDAP, and psychometric data. The exact files
-and columns will be accepted only after validating them against the README
-bundled with the downloaded release.
+Argus uses the accepted `r4.2` snapshot and matching answers. Activity inputs
+are logon/logoff, device, file, HTTP and email. Acceptance reconciled their
+schemas with the bundled README; organizational/psychometric metadata remain
+provenance/population information rather than default model inputs.
 
 The primary experimental entity is an active account-day. Labels follow the
 fixed observable-membership policy, with incident user and logged account kept
-separate. Event sequences remain planned for the LSTM scenario.
+separate. LSTM inputs are five active account-days with exact ordered membership;
+calendar gaps are retained through history features. This is account transfer,
+not a raw-event-sequence or temporal forecasting claim.
 
 ### Acquisition checklist
 

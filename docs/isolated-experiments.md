@@ -1,7 +1,7 @@
 # Independent experiments — synthetic foundation
 
-Implemented 2026-11-12. This is the supported path for new independent
-experiments, before CERT preparation. `run_all.sh` and the original training
+Implemented 2026-11-12; current status updated 2026-11-14. This is the supported
+path for new isolated synthetic/CERT experiments. `run_all.sh` and the original training
 CLIs remain the legacy reference workflow; they still update shared root
 outputs and evaluate test. Do not use them for candidate searches.
 

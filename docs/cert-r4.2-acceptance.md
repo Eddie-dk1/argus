@@ -1,5 +1,10 @@
 # CERT r4.2 — acquisition and technical audit
 
+> Исторический протокол и результаты соответствующего этапа. Текущий статус —
+> [оценка проекта](cert-r4.2-stage-assessment.md); следующий согласованный этап —
+> [S4: качество моделей](s4-model-quality-plan.md), ещё не начат. Формулировки
+> «следующий»/«пока» в датированных разделах относятся к моменту того этапа.
+
 Audited: 2026-11-12. This records source inspection, **not model results**.
 
 ## Scope and result

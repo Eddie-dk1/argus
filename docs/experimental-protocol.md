@@ -77,6 +77,16 @@ Tiny generated fixture fits verify behavior only; research training and
 calibration remain outside S3. CERT raw what-if requires a new reaggregation
 contract; the CLI only inspects/replays its existing prepared cohorts.
 
+## Approved S4 quality cycle — not executed
+
+The [S4 plan](s4-model-quality-plan.md) extends investigation into two bounded
+improvement cycles before the UI: six HGB configurations, then controlled
+RF/LSTM alternatives. Its matrix contains at most117 new fits under a ceiling
+of120 and up to12 hours of execution. Both subcycles are fixed before new
+outer results; source data, controls, failed seeds and negative findings remain.
+Original primary validation/test are excluded. A used development outer fold
+is not an independent holdout. No S4 research training has run yet.
+
 ## Research questions
 
 Argus evaluates four questions:

@@ -4,44 +4,28 @@ Updated: 2026-11-14. This is the single chronological roadmap. The [Spectra impl
 
 ## Current state
 
-Progress 2026-11-13: SSD acquisition, CERT audit and label policy, independent
-experiment artifacts and all three CERT preparation increments are complete.
-The connected-account split and 71-feature preparation are frozen on SSD.
-The active work is [controlled CERT model experiments](cert-r4.2-benchmark.md):
-RF/IF seed 42, LSTM seed 42 and five-seed robustness are complete. Original and
-global-only history policies retain 30 frozen candidates; LSTM additionally
-has three development group-fold assessments per policy. All 30
-[final test evaluations](cert-r4.2-final-evaluation.md) are complete. Current
-test is used; future confirmatory model changes need an independent holdout.
-The [quality work](cert-r4.2-improvement-plan.md) addressed consistent
-causal history and source-specific behavioral changes on development data.
-All five [quality increments](cert-r4.2-improvement-plan.md#новый-этап-пять-последовательных-пунктов)
-are complete: causal history v3 preparation and [paired group-CV](cert-r4.2-group-cv-v3.md)
-for RF/IF/LSTM. All 18 candidates use separate inner calibration and cover
-196,765 primary-train endpoints once per policy/model. RF improves modestly
-with more FP, IF worsens, and LSTM shows no recall gain.
-The separate [file/USB ablation](cert-r4.2-file-usb-v4.md) now completes increment 3:
-18 new fits and nine reused v3 controls. RF frozen v4 mean outer F1 is 0.291851,
-pooled FP 1,255 → 905 and TP 249 → 256; 390/646 positives are still missed.
-IF/LSTM remain weak in that feature comparison. The separate
-[endpoint/HGB study](cert-r4.2-model-variants-v5.md) completes increment 4:
-24 new fits and 36 frozen controls, four feature policies, the same folds.
-HGB rolling mean outer F1 is 0.621700 and PR-AUC 0.705642; pooled
-precision59.34%, recall60.99%, TP394/FP270/FN252. Endpoint score does not
-resolve LSTM weaknesses. The separate
-[operating-point and stability study](cert-r4.2-operating-point-v6.md) completes
-increment 5: 36 new fits, nine reused controls, five seeds and 135 decision
-profiles. HGB scores are identical across seeds, but the primary budget of
-1 FP/1,000 background days with recall≥50% fails on all three outer folds.
-Its pooled F1 is 0.558039, FP354, versus the unchanged F1 control 0.601527/FP270.
-No independent CERT source is available; all five increments remain development
-evidence. [S3 part 1](s3-frozen-inference.md) provides permanent quality rules
-and shared frozen inference. [Part 2](s3-frozen-diagnostics.md) completes exact
-saved-result replay and diagnosis. [Part 3](s3-synthetic-scenarios.md) completes
-verified synthetic scenarios and the unified CLI; S3 is complete, followed by
-S4–S7. Network data remain separate milestones. See the
-[readiness assessment and exact remaining work](cert-r4.2-stage-assessment.md).
-The eight-tree IF smoke run is excluded from this research comparison.
+S0–S3 are complete within their documented scope: accepted CERT data/labels,
+isolated preparation/candidate/final artifacts, five controlled quality
+increments and the common frozen runtime. The [S3 reports](s3-frozen-inference.md)
+cover exact saved-result replay, quality diagnosis and verified synthetic raw
+scenarios. CERT raw what-if remains a separate reaggregation task.
+
+The immediate next work is the [seven-part S4 quality plan](s4-model-quality-plan.md),
+**approved but not started**. Error investigation and normal references lead
+into bounded HGB context/regularization experiments and an RF/LSTM comparison.
+Model quality takes priority over the S5 interface. The declared matrix has at
+most 117 new fits, ceiling 120 and up to 12 hours of experiment execution.
+
+Current primary HGB rolling development result: precision 52.23%, recall 59.91%,
+F1 0.558039, TP387/FP354/FN259. The target FP≤1/1,000 and recall≥50% fails
+jointly on all three outer folds. The separate legacy F1-control remains
+P59.34%/R60.99%/F1 0.601527, FP270/FN252. Mean within-fold PR-AUC is 0.705642;
+rankings are not pooled across folds. HGB seeds have identical scores.
+
+All new quality results remain reused development evidence. The CERT test was
+consumed on 2026-11-13; improved-model confirmation needs separately accepted
+independent data. Network datasets remain separate milestones. See the
+[stage assessment](cert-r4.2-stage-assessment.md) and the historical log below.
 
 Completed in argus-v0.1.0 / argus-v0.2.0:
 - repository foundation, deterministic synthetic generation and causal features;
@@ -49,8 +33,8 @@ Completed in argus-v0.1.0 / argus-v0.2.0:
 - validation-selected thresholds/epoch, metrics, timing and compact reference;
 - public-dataset research, schema fixtures, inspection and external-storage checks.
 
-Still pending: stronger public-data quality evidence, unified Spectra UI,
-raw scenario replay and automated configuration studies. New isolated candidates
+Still pending: the S4 improvement cycles, independent quality confirmation,
+unified Spectra UI, CERT raw reaggregation and automated configuration studies. New isolated candidates
 preserve their own inputs/models/predictions; legacy root outputs can still be
 overwritten by legacy commands.
 
@@ -61,7 +45,17 @@ controls and selected states; red is reserved for actual problems/anomalies.
 Archived red-heavy concepts are not implementation requirements.
 
 <a id="resume-after-ssd"></a>
-## Resume after SSD — точка продолжения разработки
+## Точка продолжения — S4 и качество моделей
+
+Текущий порядок — [семь пунктов S4](s4-model-quality-plan.md), затем S5 UI и
+более широкий S6 quality/search cycle. S4 выполняется по одному пункту за
+запрос; ни один из новых research fits ещё не запускался.
+
+### Исходная последовательность после SSD — историческая справка
+
+Пункты1–4 ниже уже выполнены для CERT; frozen/synthetic часть пункта5 закрыта
+в S3. Текст сохраняет исходный порядок, а текущие изменения S4 определены
+отдельным согласованным планом. UI, расширенный поиск и поставка ещё впереди.
 
 ### 1. Подключить и проверить хранилище
 
@@ -273,8 +267,8 @@ recorded separately below.
 rolling, matched RF rolling and prior RF frozen. All 45 jobs/135 decision
 profiles complete: 36 new fits and nine unchanged seed42 checkpoints. Primary
 recall maximization under calibration FP1/1,000 with recall≥50% does not
-transfer reliably to outer accounts. HGB primary pooled precision52.23%,
-recall59.91%, F1 0.558039, FP354 (actual1.805/1,000); no outer fold satisfies
+transfer reliably to outer accounts. HGB primary pooled precision 52.23%,
+recall 59.91%, F1 0.558039, FP354 (actual1.805/1,000); no outer fold satisfies
 both conditions. All HGB seed score arrays are exactly equal, while RF varies;
 no best seed or sensitivity profile is promoted. Independent accepted CERT
 data are unavailable, so no new test scoring/confirmatory claim is made.
@@ -292,6 +286,7 @@ frozen inference, saved-result diagnosis, then verified synthetic scenarios/CLI.
 Parts 1–2 implement the shared API and complete saved-result replay/diagnosis.
 [Part 3](s3-synthetic-scenarios.md) now completes verified synthetic scenarios
 and `argus.py inspect/replay/diagnose/scenario`; S3 is complete. The next
-implementation stage is S4: event investigation and train-only normal references.
+implementation stage is the [expanded S4](s4-model-quality-plan.md): event investigation,
+train-only normal references and two bounded quality-improvement cycles.
 Quality hypotheses from diagnosis require their own bounded protocols in the
 later improvement cycle. Independent improved-CERT confirmation remains open.

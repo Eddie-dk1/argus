@@ -1,16 +1,18 @@
 # Argus / Spectra Lab — единый план разработки
 
-Implementation update 2026-11-12: the new [isolated experiment workflow](isolated-experiments.md) now provides synthetic preparation IDs, exact membership, saved inputs/models, validation-only candidates and explicit final evaluation. Descriptions below of shared root outputs and mandatory test access apply to legacy scripts; CERT preparation and Spectra remain future work.
+Версия: 2.1. Обновлено: 14 ноября 2026 года.
 
-Версия: 2.0. Обновлено: 27 октября 2026 года. Основание аудита: исходники Argus, HEAD 08d6576.
+Реализованы [isolated experiments](isolated-experiments.md) для synthetic/CERT,
+CERT group split/user-day preparation, frozen final и пять quality increments.
+[S3 завершён](s3-synthetic-scenarios.md): общий inference, replay, диагностика,
+synthetic raw scenarios и CLI. Описания shared root outputs относятся к legacy.
 
-Статус: утверждённое направление будущей разработки. Spectra Lab и перечисленные ниже команды пока не реализованы. Этот документ определяет состав продукта и изменения кода; [roadmap](roadmap.md) — очередность работ после SSD, [experimental protocol](experimental-protocol.md) — правила научной оценки.
-
-Уточнение 12.11.2026: техническая приёмка CERT завершена; зафиксирована
-[label policy v1](cert-r4.2-label-policy.md). User-group split для CERT означает
-неделимые группы аккаунтов, связанных официальным инцидентом, включая сценарий
-№3. Индекс меток проверен; распределение групп, user-day preparation и обучение
-ещё не реализованы.
+Статус продукта: единый Spectra backend/UI ещё планируется. Ближайший
+[S4 расширен до семи пунктов](s4-model-quality-plan.md): разбор ошибок,
+normal references и два ограниченных цикла улучшения HGB/RF/LSTM. Приоритет —
+качество моделей; UI S5 следует после этой исследовательской работы.
+[Roadmap](roadmap.md) задаёт очередь, [protocol](experimental-protocol.md) —
+правила оценки. Future API/UI-команды в целевой архитектуре остаются планом.
 
 ## 1. Одно приложение и одно название лаборатории
 
@@ -293,13 +295,15 @@ UI показывает trials, параметры, качество/затра�
 | S1: Контракты и изоляция | IDs, item/sequence membership, state/schema, trial/final separation, isolated roots | Synthetic regression; два runs независимы; trial не читает test | features, preprocessing, tracking, training, evaluate |
 | S2: Первый публичный baseline | CERT raw→user-day→group split→train-fitted features→оценка | Воспроизводимый user-day run с event mapping; ограничения cold start записаны | datasets + scenario preparation |
 | S3: Frozen inference и Python-сценарий | Выполнен по [трём согласованным пунктам](s3-frozen-inference.md): общий API, диагностика, [raw-сценарии/CLI](s3-synthetic-scenarios.md) | RF/IF/HGB и обе LSTM score policies: no-op, bytes patch и full-split oracle; frozen sources сохранены | inference + research/scenarios |
-| S4: Разбор и нормальные ориентиры | API/карточка, timeline, exact kNN, residuals, scope/coverage | Исходник→model input→reference проверяемы; CERT read-only capabilities | spectra + research/references |
+| S4: Разбор и улучшение моделей | [Семь пунктов](s4-model-quality-plan.md): source/input, references/residuals, два bounded quality cycles HGB/RF/LSTM | Проверяемые объяснения и полное сравнение новых вариантов с frozen controls; независимость не заявляется | investigation + references + quality runner |
 | S5: Единый пользовательский маршрут | Обзор, разбор, проверка сценариев; history/jobs | Пользователь выполняет полный маршрут без правки файлов | один frontend/spectra |
 | S6: Подбор моделей | Bounded random search, затем TPE, измерения и Pareto view | Study воспроизводим; только validation; winner заморожен | research/selection + benchmarks |
 | S7: Поставка и исследование | Offline bundle/view, resource limits, tests, эксперимент статьи | Устанавливаемая лаборатория и подтверждённые результаты | exports/jobs/tests/docs |
 | S8: Следующая очередь | CICIDS2017, затем CSE transfer по data roadmap; карта после основного маршрута | Каждый источник/метод имеет отдельные contracts и evidence | отдельные adapters/projections |
 
-Ориентир S1: 5–9 дней; S2: 5–10 после принятия schema; S3: 3–5; S4–S5: 6–10; S6: 4–7; S7: 4–7. Сроки уточняются после S1/S2, общий резерв 20–30%; старые сроки отдельного EventLens больше не применяются.
+Старые ориентиры длительности относились к исходному разбиению. Расширенный
+S4 выполняется по семи отдельным пунктам; до12 часов — предел вычислительных
+экспериментов, не оценка всего времени разработки. S5–S7 уточняются после S4.
 
 Разбор synthetic и Python-прототип S3 допустимо развивать до окончания S2, если ожидание данных не даёт прогресса. Подбор S6 не обходится без изоляции S1 и стабильного baseline. Не ждать всех трёх публичных датасетов для первого работающего UI.
 

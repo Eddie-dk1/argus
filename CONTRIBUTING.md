@@ -14,6 +14,10 @@ model, interface and thesis experiment, including S3–S8. Name each stage's
 quality contribution: a new experiment, diagnosis, or preservation check.
 An API/UI change alone is not an improvement in detection quality.
 
+Current priority: the [seven-part S4 quality plan](docs/s4-model-quality-plan.md).
+It is approved but not executed. Its bounded experiments precede the Spectra
+UI work; implementation still follows one separately verified part per request.
+
 ## Before Changing an Experiment
 
 Project-owner priority: improve detection quality through justified, testable
