@@ -4,7 +4,7 @@
 по одному за запрос. Он заменяет предварительное разбиение на четыре задачи
 в [оценке предыдущего этапа](cert-r4.2-stage-assessment.md).
 
-1. **Общие правила и inference.** Постоянные требования всех этапов в
+1. **Общие правила и inference — выполнено.** Постоянные требования всех этапов в
    [AGENTS.md](../AGENTS.md), CONTRIBUTING и экспериментальном протоколе;
    единая загрузка RF/IF/HGB/LSTM из frozen artifacts.
 2. **Воспроизведение и диагностика — выполнено.** [Отчёт пункта 2](s3-frozen-diagnostics.md): все 60 результатов серии model-variants
@@ -12,7 +12,8 @@
    folds/seeds пунктов 4–5. Сравнить calibration/outer, FP-бюджет и recall,
    score distributions, аккаунты/независимые группы, cold-start и сценарии.
    Разделить факты, возможные объяснения и будущие quality-гипотезы.
-3. **Synthetic scenarios и CLI.** `bytes_sent`: endpoint, ранний member, no-op,
+3. **Synthetic scenarios и CLI — выполнено.** [Протокол и результаты](s3-synthetic-scenarios.md).
+   `bytes_sent`: endpoint, ранний member, no-op,
    удвоение и ноль; пересчёт всей истории пользователя через frozen builder,
    проверка полным split oracle; сохранение lineage/patch/inputs/scores.
    CLI `inspect`, `replay`, `diagnose`, `scenario` и полный regression.
@@ -62,7 +63,7 @@ decisions = run.predict(batch)
 saved inputs. Нельзя просто присвоить чужим inputs hashes из `run.spec` и
 считать provenance проверенным. Batch хранит заявление производителя; runtime
 проверяет его совпадение и структуру, но численные данные сами по себе не
-доказывают происхождение, хронологию или membership. Пункт 2 отдельно проверит
+доказывают происхождение, хронологию или membership. Пункт 2 отдельно проверяет
 их точное совпадение с сохранёнными assessment artifacts.
 
 Batch не содержит labels, threshold override или preprocessing fit. Числа

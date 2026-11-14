@@ -292,7 +292,7 @@ UI показывает trials, параметры, качество/затра�
 | S0: SSD и принятие CERT | Mount, manifest/budget, r4.2+answers, schema/label audit | Принятый или явно отклонённый snapshot; большие данные вне Git | data_paths, check_data_storage, datasets |
 | S1: Контракты и изоляция | IDs, item/sequence membership, state/schema, trial/final separation, isolated roots | Synthetic regression; два runs независимы; trial не читает test | features, preprocessing, tracking, training, evaluate |
 | S2: Первый публичный baseline | CERT raw→user-day→group split→train-fitted features→оценка | Воспроизводимый user-day run с event mapping; ограничения cold start записаны | datasets + scenario preparation |
-| S3: Frozen inference и Python-сценарий | Per-run weights, reload, no-op, bytes patch и full recompute | Одна LSTM воспроизводит base и корректно оценивает отдельный вариант | inference + research/scenarios |
+| S3: Frozen inference и Python-сценарий | Выполнен по [трём согласованным пунктам](s3-frozen-inference.md): общий API, диагностика, [raw-сценарии/CLI](s3-synthetic-scenarios.md) | RF/IF/HGB и обе LSTM score policies: no-op, bytes patch и full-split oracle; frozen sources сохранены | inference + research/scenarios |
 | S4: Разбор и нормальные ориентиры | API/карточка, timeline, exact kNN, residuals, scope/coverage | Исходник→model input→reference проверяемы; CERT read-only capabilities | spectra + research/references |
 | S5: Единый пользовательский маршрут | Обзор, разбор, проверка сценариев; history/jobs | Пользователь выполняет полный маршрут без правки файлов | один frontend/spectra |
 | S6: Подбор моделей | Bounded random search, затем TPE, измерения и Pareto view | Study воспроизводим; только validation; winner заморожен | research/selection + benchmarks |

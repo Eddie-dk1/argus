@@ -66,6 +66,17 @@ model-seed statistics from fixed-seed fold statistics. Identical values have
 zero measured seed variation. The new report is reused-development diagnosis,
 not independent confirmation; no thresholds or active models were reselected.
 
+S3 part 3 completes [verified synthetic raw scenarios](s3-synthetic-scenarios.md)
+and `argus.py inspect/replay/diagnose/scenario`. `bytes_sent` patches preserve
+actors/time/IDs/membership, reuse frozen train state and weights, recompute all
+affected user history inside one split, and must match a full-split oracle.
+No-op tolerances are fixed before replay: float32 rtol1e-6/atol1e-7, float64
+rtol1e-12/atol1e-12, exact decisions. Base labels are separate provenance;
+variant truth is unknown and variants are excluded from benchmark metrics.
+Tiny generated fixture fits verify behavior only; research training and
+calibration remain outside S3. CERT raw what-if requires a new reaggregation
+contract; the CLI only inspects/replays its existing prepared cohorts.
+
 ## Research questions
 
 Argus evaluates four questions:

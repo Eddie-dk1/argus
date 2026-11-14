@@ -317,6 +317,8 @@ claimed. [S3 part 1](docs/s3-frozen-inference.md) adds the common read-only
 `load_frozen_run` API for RF/IF/HGB and both LSTM scores, explicit operating
 profiles and label-free prepared batches. [Part 2](docs/s3-frozen-diagnostics.md)
 completes exact assessment replay and diagnosis across all saved folds/seeds,
-preserving the failed primary FP/recall result. Verified raw scenarios/CLI
-remain part 3; see the
+preserving the failed primary FP/recall result. [Part 3](docs/s3-synthetic-scenarios.md)
+completes synthetic `bytes_sent` scenarios with full-split recompute verification
+and the unified `src/argus.py` CLI: `inspect`, `replay`, `diagnose`, `scenario`.
+S3 is complete; detection metrics remain unchanged. See the
 [remaining stages](docs/cert-r4.2-stage-assessment.md).

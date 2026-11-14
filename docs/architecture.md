@@ -255,7 +255,7 @@ loads CPU weights and exposes full-window reconstruction with either named
 score policy. An operating bundle requires an explicit profile. Schema, policy,
 status, lineage and checksum checks precede scoring; no fit or threshold search
 runs. The [S3 contract](s3-frozen-inference.md) documents producer provenance
-responsibilities and the remaining scenario/CLI work.
+responsibilities; [part 3](s3-synthetic-scenarios.md) implements scenarios/CLI.
 
 ### Frozen replay and diagnosis — S3 part 2
 
@@ -271,3 +271,20 @@ produces the readable report/figure and a quality-hypothesis queue without
 selecting thresholds or models. The versioned JSON includes all 45 operating
 bundles and every saved fold/seed/profile; cross-fold score rankings remain
 undefined. See [the protocol and results](s3-frozen-diagnostics.md).
+
+### Verified synthetic scenarios and CLI — S3 part 3
+
+`argus.py` exposes `inspect`, `replay`, `diagnose`, `scenario`, setting original
+CPU threads before numeric imports. `frozen_runtime.py` binds saved inputs and
+reference predictions to sealed models/preparations; outputs are new UUID
+artifacts with source/code hashes and preservation checks. `diagnose` delegates
+to the established runner with its original access guards.
+
+`synthetic_scenarios.py` patches only raw `bytes_sent`, recomputes the entire
+affected user history using frozen train state and the original builder/CSV
+boundary, and compares features, inputs, ordered membership and inference with
+a separate full-split recompute. No-op uses predeclared dtype tolerances and
+exact decisions; other users remain unchanged. Base labels are provenance,
+variant ground truth is unknown, and variants never enter benchmark metrics.
+CERT supports inspection/replay of saved prepared inputs; raw reaggregation
+remains a separate contract. See [the scenario protocol](s3-synthetic-scenarios.md).

@@ -1,0 +1,37 @@
+{
+  "schema": "argus.synthetic_scenarios.v1",
+  "raw_field": "bytes_sent",
+  "positions": ["endpoint", "earlier"],
+  "demonstration_operations": ["noop", "double", "zero"],
+  "selection": "first eligible (user_id, timestamp, event_id); no labels or scores",
+  "history_requirement": "earliest window member has a full prior rolling window; endpoint has a successor in the same split; both edited positions have positive bytes_sent",
+  "recompute": "all events of the affected user in the selected split, using the original frozen builder and train state",
+  "prepared_numeric_boundary": "original float32 feature builder -> pandas CSV writer -> original pandas CSV reader; LSTM then casts to float32",
+  "oracle": "independent full-split call to the original builder; inputs, membership, scores and decisions must match exactly",
+  "no_op_tolerances": {
+    "float32": {"rtol": 0.000001, "atol": 0.0000001},
+    "float64": {"rtol": 0.000000000001, "atol": 0.000000000001}
+  },
+  "decisions": "exact, including no-op",
+  "variant_ground_truth": "unknown",
+  "include_in_benchmark_metrics": false,
+  "research_fits": 0,
+  "threshold_selection": false,
+  "cert_raw_what_if": false,
+  "functional_fixture": {
+    "purpose": "engineering validation only; no detection-quality claim",
+    "seed": 42,
+    "n_events": 1200,
+    "n_users": 8,
+    "n_days": 30,
+    "anomaly_ratio": 0.1,
+    "random_forest_estimators": 3,
+    "isolation_forest_estimators": 3,
+    "hgb_iterations": 3,
+    "lstm_epochs": 1,
+    "lstm_hidden_size": 4,
+    "model_score_variants": 5,
+    "scenario_cases_per_variant": 6,
+    "scope": "one fixture setup per functional suite run and one retained demonstration; existing regression fixtures remain unchanged"
+  }
+}
