@@ -1,0 +1,10 @@
+{
+  "schema": "argus.cert_s6_dispatch_lock.v2",
+  "study_id": "s6_step2_E5302A11CF16482194CC6D131563AB94",
+  "directory": "sealed",
+  "runtime_sha256": "97adefe26b6d9c46befb5b6c373ed98d69ec8ee614546adefb94cdd2da03d37a",
+  "initial_ledger_sha256": "2d00451b0b5a83c58fb45375fdde95c0d43620591ff86e4e443bcadd088ae1d1",
+  "dispatch_sources": {
+    "src/run_cert_s6.py": "ade2d0f824755d069bb50791cbaa5b94990d27d727d394b10f3ffefac6ef3e46"
+  }
+}

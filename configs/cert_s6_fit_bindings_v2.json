@@ -1,0 +1,487 @@
+{
+  "schema_version": "argus.cert_s6_fit_reference.v2",
+  "seed": 42,
+  "digests": "Ordered ID/label/group/float64-weight lists use Argus canonical JSON SHA-256. Artifact checksums hash file bytes.",
+  "controls": {
+    "H1_H0_inner1": {
+      "candidate": "candidate_27762221b5f34fbd96f2f56b24838d0f",
+      "preparation": "cert_preparation_fb886c5083a8488c9a510b84ed2933e7",
+      "frozen": "cert_operating_candidate_68479e288fda4889b44138e05dd43c1e",
+      "candidate_sha256": "27b6aa9a046121578eb31f8ab2327821afd4b1040abf57ec3d5d5f21d9519cc3",
+      "preparation_sha256": "0cd0f7298385270a5792e8dc3b2c07e0a043d3af6c919c68fbf80eb82a922354",
+      "frozen_sha256": "ba81a2d264e7f52ee427b9b3389c86f1b4ffa5e8cd0b49de365ac1c6cc4432ee",
+      "config_sha256": "28703ec9747c89a2f3bd22f6dadd028e39746848356c54cf81d6fa9151c749a3",
+      "model_sha256": "49a5da08e231b12b2c687e20a98bd233fd0eb2f8162536316c680e0858be1a3a",
+      "state_sha256": "58114809ae251d715192a86c49dc771ec29d4047f2bb281933af7ca23928ec69",
+      "train_inputs_sha256": "0af6f799ead889ae5c51b084021f4174a9832d3f2ae0438830a7faae74452897",
+      "fit_ids_sha256": "716b1895cab7bf688b4e79801681d845d3201cd8c6696973c1dd9fbf716d7a00",
+      "labels_sha256": "7a7935b4f1e215f0bd80e7288add28fb590ff480641177a4be33cf34ad9234df",
+      "groups_sha256": "fe357ee42e9285296eced7e1aaab450383bc4a7d14e664469aef300b52d1b3dd",
+      "weights_sha256": "0b6c38f2effce1d6c4701ed6dc7a5a3684c801c4871e18555131b5268ef94c0b",
+      "tabular_order_sha256": "1918fc8e7bda980edbbc27c31085effda6501fa1380166006147a4b8cd051e0e",
+      "accounts": 236,
+      "groups": 236,
+      "fit_days": 79578,
+      "fit_endpoints": 78634,
+      "endpoint_positives": 265,
+      "by_class": {
+        "0": {
+          "days": 79313,
+          "groups": 236,
+          "mass": 39789.0,
+          "minimum": 0.342677759,
+          "maximum": 5.813705435,
+          "effective_days": 71471.087752
+        },
+        "1": {
+          "days": 265,
+          "groups": 17,
+          "mass": 39789.0,
+          "minimum": 66.872268908,
+          "maximum": 2340.529411765,
+          "effective_days": 80.114323
+        }
+      }
+    },
+    "H1_H0_inner2": {
+      "candidate": "candidate_ba421e523c564379bb789a3d7bc1e7cc",
+      "preparation": "cert_preparation_3896c22673894048a86f436470c232f7",
+      "frozen": "cert_operating_candidate_319cd1e644014417a8bc2429bc62cdf8",
+      "candidate_sha256": "f07badd9c86bdb86b77ab41fc927caba1e85430c2d9509fa333127ca6d7c0ffb",
+      "preparation_sha256": "47bcb3d63b6621feea4594bd51dde1f3b35b33287b516fdc45e4664d91aa681d",
+      "frozen_sha256": "1169c943b4ca35976b8406379cb2f33bc76afed4dd412e5de101e3fb3c38dfee",
+      "config_sha256": "28703ec9747c89a2f3bd22f6dadd028e39746848356c54cf81d6fa9151c749a3",
+      "model_sha256": "bdf0a0b7d0beaccbf4a5d7fbeffd76bd944e614e88433a513ab72a4f8bf4bf77",
+      "state_sha256": "e9eb92df5d646e46f82df5628d82dafb86a7645f0116936bb43b78fd98e3aa02",
+      "train_inputs_sha256": "48fb10a8dfc1fba8e0279a87fc739ed79297d863ce948efe3746c20a7a3b3b4a",
+      "fit_ids_sha256": "3e071f8918226fcef0cd1c91f3679ca52056f08f7bb5f28461ae2d93fb860816",
+      "labels_sha256": "470ca8eae171ce7895a84907133a777d77e88d84f2fe7ffb2ff9e6e4afdcbe36",
+      "groups_sha256": "70ccd04c3b4055ee09e47ee7155898c2a13ab4679e1e508d5750c1a024e5672a",
+      "weights_sha256": "742841a0c0bffc847db172cb288cab64c7612f2728e0d8d9bb7d21ef7adcc181",
+      "tabular_order_sha256": "1918fc8e7bda980edbbc27c31085effda6501fa1380166006147a4b8cd051e0e",
+      "accounts": 235,
+      "groups": 235,
+      "fit_days": 79723,
+      "fit_endpoints": 78783,
+      "endpoint_positives": 248,
+      "by_class": {
+        "0": {
+          "days": 79475,
+          "groups": 235,
+          "mass": 39861.5,
+          "minimum": 0.342673544,
+          "maximum": 1.203002867,
+          "effective_days": 76201.302561
+        },
+        "1": {
+          "days": 248,
+          "groups": 20,
+          "mass": 39861.5,
+          "minimum": 56.945,
+          "maximum": 1993.075,
+          "effective_days": 73.53578
+        }
+      }
+    },
+    "H1_H0_inner3": {
+      "candidate": "candidate_5ac632f3b86b496a81ea7e44249bfae6",
+      "preparation": "cert_preparation_c142b67acd98418eb808ca37b9ef8e42",
+      "frozen": "cert_operating_candidate_19985618932f4d8cab19e4ae32ceac84",
+      "candidate_sha256": "2694d1ddf5c3f078659d5fa0ef04c99734abaf60a516b0162d3c339a3494d111",
+      "preparation_sha256": "a1d1e9b1117e7f804fc20f0361f0f72d8ff0ac50aa5d887a7bb4b196b316a8ea",
+      "frozen_sha256": "54de7605d7e32fbe2d76bb7d6541871a901e3c6876aa8b76861748672c7c2f2f",
+      "config_sha256": "28703ec9747c89a2f3bd22f6dadd028e39746848356c54cf81d6fa9151c749a3",
+      "model_sha256": "ced5326e4a65efbeb4414e642228489701694e4af3ed234aeec98b0582fb4eff",
+      "state_sha256": "800c935afc2a84c9e9b339c6bc45f3cd3cf460c2ddef531d58c41a14ac78c224",
+      "train_inputs_sha256": "d1a1cdf0b9cdcbf2cd71782bcb5ae1a6f99dfc86e692ec89680228d4141caf26",
+      "fit_ids_sha256": "4f1e02c4276cd54e674527534ef07ea2e691a7868e5b56315b8bde383bc8275f",
+      "labels_sha256": "e98986030cb9b36e3b8c15269dae9e1943ff59bd5dbc0b392600cd61906b4c61",
+      "groups_sha256": "e632ee7b6c8eb405ec7cc7dcab9286b26e86d26fc392ba2474274022ab7b5941",
+      "weights_sha256": "257422c4795504c0d98858dfe5fdd9b112a8e3c09bd110f3ff9ae621d722b86f",
+      "tabular_order_sha256": "1918fc8e7bda980edbbc27c31085effda6501fa1380166006147a4b8cd051e0e",
+      "accounts": 238,
+      "groups": 238,
+      "fit_days": 79695,
+      "fit_endpoints": 78743,
+      "endpoint_positives": 234,
+      "by_class": {
+        "0": {
+          "days": 79461,
+          "groups": 238,
+          "mass": 39847.5,
+          "minimum": 0.338235294,
+          "maximum": 6.697058824,
+          "effective_days": 69030.554845
+        },
+        "1": {
+          "days": 234,
+          "groups": 18,
+          "mass": 39847.5,
+          "minimum": 73.791666667,
+          "maximum": 2213.75,
+          "effective_days": 65.517453
+        }
+      }
+    },
+    "hgb_rolling_seed42_fold1": {
+      "candidate": "candidate_8c364ba907aa4e5cb9a3ca26ccbae3e8",
+      "preparation": "cert_preparation_375e69bfb2fe44ebaf68313458b39c39",
+      "frozen": "cert_operating_candidate_5d7621bc0901426db767b9ec26994fbf",
+      "candidate_sha256": "62875bae6306315ed4d9e1ee888880bd8d3f73e3cbd077a5275f3c3285db21a8",
+      "preparation_sha256": "0957cd772bf586ba3c6f3993f37eb1eaa56ab65b81fbee22eea904c6972c2a69",
+      "frozen_sha256": "0ce0a3e58265a66ddc28f387b87bddfb7f25a4b42860dbd3bd02a094a0e52fa4",
+      "config_sha256": "28703ec9747c89a2f3bd22f6dadd028e39746848356c54cf81d6fa9151c749a3",
+      "model_sha256": "473a3f6252e7cd274fc92120f47401dc66529a49e1ea4ca261b901d20fb111fc",
+      "state_sha256": "490a3db0cb01bcc67a2cdee9b892dd0d52492030da6a90572db530cbe361426b",
+      "train_inputs_sha256": "870d5120e3b86ad6f2553790709e62bbca7f1796610efa6edebe365877f123d8",
+      "fit_ids_sha256": "af91d8a4147b8a8620947fbf6615013f447c5fcdb2d1dcbd74ff73151563374d",
+      "labels_sha256": "5260d11b029737745c1effafda49edb69c0100ea66897ced6f18f581c339139d",
+      "groups_sha256": "87389cc1bfe9d477ef18c5199131bb7a753b77fb7aa22abc5b7e1d6ba65e4137",
+      "weights_sha256": "7ac948dbe2ba9fa7c31042a6e2510bcf4d09166ec8d524b4b59cc20a0446660c",
+      "tabular_order_sha256": "1918fc8e7bda980edbbc27c31085effda6501fa1380166006147a4b8cd051e0e",
+      "accounts": 317,
+      "groups": 317,
+      "fit_days": 106132,
+      "fit_endpoints": 104864,
+      "endpoint_positives": 347,
+      "by_class": {
+        "0": {
+          "days": 105785,
+          "groups": 317,
+          "mass": 53066.0,
+          "minimum": 0.338867674,
+          "maximum": 6.696025237,
+          "effective_days": 90283.045285
+        },
+        "1": {
+          "days": 347,
+          "groups": 20,
+          "mass": 53066.0,
+          "minimum": 75.808571429,
+          "maximum": 2653.3,
+          "effective_days": 105.286878
+        }
+      }
+    },
+    "H2_H0_inner1": {
+      "candidate": "candidate_b781ce7844f24577949700838d79da89",
+      "preparation": "cert_preparation_bd22778f11cc4f1aa61a1e5c80415e8b",
+      "frozen": "cert_operating_candidate_7003667387d64888a93f4ae2900142e4",
+      "candidate_sha256": "b2568bccace085cba973c6619f20e99c6220640397595eb819bef1ae3c4cd51a",
+      "preparation_sha256": "988aa84d97245f93cdc418761dbf95554c959f03608cb787eb7f819b161c1f75",
+      "frozen_sha256": "599820155c78e69a761ba29b2ec3ca1905f983e5c3b48850a0f5d66a8b7d53c0",
+      "config_sha256": "28703ec9747c89a2f3bd22f6dadd028e39746848356c54cf81d6fa9151c749a3",
+      "model_sha256": "19871d590861746e08a170e4ba65ea33d6688380ee782306d71f5d9f9e7ed3f1",
+      "state_sha256": "2ab1815ea4d03625921be70db19e0a6715e16592e65103a339ddc4a97939e7b1",
+      "train_inputs_sha256": "def28c6fc15c310ad554cfe11030b992d8938db062bfeb4d3e0f2dd78b6ed559",
+      "fit_ids_sha256": "edf193b8947bb04b6d119141850687988cc77300d0db158a9a9877ae4668fe97",
+      "labels_sha256": "46d36b92101ea21c012aaedafc8c9f7ce9e249ec3b434035bdb20171995cc74f",
+      "groups_sha256": "afde5a41c2590cd2895f98b57b91280d41c5c8a5ac59736c08d758c4fc353abb",
+      "weights_sha256": "95e7cb778b1143fe4b6886098ed047e0d0f5d082153403b83c3ab34dbaac3c1a",
+      "tabular_order_sha256": "1918fc8e7bda980edbbc27c31085effda6501fa1380166006147a4b8cd051e0e",
+      "accounts": 238,
+      "groups": 238,
+      "fit_days": 79629,
+      "fit_endpoints": 78677,
+      "endpoint_positives": 255,
+      "by_class": {
+        "0": {
+          "days": 79374,
+          "groups": 238,
+          "mass": 39814.5,
+          "minimum": 0.340015884,
+          "maximum": 6.691512605,
+          "effective_days": 67915.83608
+        },
+        "1": {
+          "days": 255,
+          "groups": 12,
+          "mass": 39814.5,
+          "minimum": 94.796428571,
+          "maximum": 1105.958333333,
+          "effective_days": 95.008701
+        }
+      }
+    },
+    "H2_H0_inner2": {
+      "candidate": "candidate_2d456c83da284c73b1643ce98276b69a",
+      "preparation": "cert_preparation_a889f1b23c0d4328987010b2c895b5af",
+      "frozen": "cert_operating_candidate_705ff32a90184215af3f059b31c3a115",
+      "candidate_sha256": "cf70cc71b0880bdebbe22cdbda90f4cfd5ce1c973ba3e586fd48d01d9d1f8bbb",
+      "preparation_sha256": "28d2709b662b4b330b0ca099fd6be4cefd496d07ce3ba274add13b3f9824ca97",
+      "frozen_sha256": "f1963bebfc359371023489df490d956bc43d8e17ef79842a008f07f564530f5a",
+      "config_sha256": "28703ec9747c89a2f3bd22f6dadd028e39746848356c54cf81d6fa9151c749a3",
+      "model_sha256": "3abbf4f46c908f4f37ef995e75b7afb8bf6d8088656ad2741413827dc083b37d",
+      "state_sha256": "6b8bad805818318bfff5b6dd467b79076cf650606476e5068ea21a4b907f05b5",
+      "train_inputs_sha256": "d36a61eb40052c2eca401d20f9bd94925dbfef39ed177ccc05ee436545e64b54",
+      "fit_ids_sha256": "f37232d392ba65177483c3c523755ca7017ed17be9cc69a168e380be54dc1025",
+      "labels_sha256": "6723c360fb9440dd1c7e8e15aa488cb19127c5537779438d9dca5c899721ce3d",
+      "groups_sha256": "0b8410f556b38fa7ae0f718410b97f21b75debb029acc253dc53c3de92960311",
+      "weights_sha256": "e01fe4f9710d40360bd1c409f271f81ae7c0d321083ce117c421a37ecfdecfed",
+      "tabular_order_sha256": "1918fc8e7bda980edbbc27c31085effda6501fa1380166006147a4b8cd051e0e",
+      "accounts": 243,
+      "groups": 235,
+      "fit_days": 79635,
+      "fit_endpoints": 78663,
+      "endpoint_positives": 275,
+      "by_class": {
+        "0": {
+          "days": 79360,
+          "groups": 235,
+          "mass": 39817.5,
+          "minimum": 0.103377773,
+          "maximum": 4.841033435,
+          "effective_days": 69400.960359
+        },
+        "1": {
+          "days": 275,
+          "groups": 11,
+          "mass": 39817.5,
+          "minimum": 103.422077922,
+          "maximum": 1206.590909091,
+          "effective_days": 124.837101
+        }
+      }
+    },
+    "H2_H0_inner3": {
+      "candidate": "candidate_9d2533eb25c94d978a7a98312d5b774f",
+      "preparation": "cert_preparation_84a8de5e84134d358dab6aed612b34a0",
+      "frozen": "cert_operating_candidate_95fde82f567d465f88766e994f7841e0",
+      "candidate_sha256": "bd68be50ff81786499b29d298824fa92865cd7238dac4877e249afed35414ed4",
+      "preparation_sha256": "bf3fe972b62a1400a26b52becc83cf6c555c4eb495c93550a77468d033d5dbde",
+      "frozen_sha256": "51e118fe72c6b78e11655db7c93d61e5e56d36615567759e6a75e2961915ca49",
+      "config_sha256": "28703ec9747c89a2f3bd22f6dadd028e39746848356c54cf81d6fa9151c749a3",
+      "model_sha256": "88db5b638c8a3a3f2bb35d1aacb3238185dde50502f1f21ee0ea8840f8aee012",
+      "state_sha256": "a929b7e295d69c9a0fcfaeaa55147eed166a1179793d17a78369c70abdefb596",
+      "train_inputs_sha256": "f9cb10598806247af037e7667b535f272b8819832d7d1348b7c060c659a90fe9",
+      "fit_ids_sha256": "a77961727a31297686d480d2213c8e65ae8a8558705119142bd569220f43fb86",
+      "labels_sha256": "35e02c4374e46746053d3a5ab289537e995b4029bd864ce969a0f74a673a8f7d",
+      "groups_sha256": "b899e0125f0c755741648a5040d80b1cc254d473c16476114478de546a9cef81",
+      "weights_sha256": "59e0a5b17edde70d9a572cedc4c428bbdf05724a700db3d49b5af783a6db9e09",
+      "tabular_order_sha256": "1918fc8e7bda980edbbc27c31085effda6501fa1380166006147a4b8cd051e0e",
+      "accounts": 242,
+      "groups": 234,
+      "fit_days": 79725,
+      "fit_endpoints": 78757,
+      "endpoint_positives": 266,
+      "by_class": {
+        "0": {
+          "days": 79459,
+          "groups": 234,
+          "mass": 39862.5,
+          "minimum": 0.103936891,
+          "maximum": 4.482962213,
+          "effective_days": 72662.100964
+        },
+        "1": {
+          "days": 266,
+          "groups": 15,
+          "mass": 39862.5,
+          "minimum": 75.928571429,
+          "maximum": 2657.5,
+          "effective_days": 75.885295
+        }
+      }
+    },
+    "hgb_rolling_seed42_fold2": {
+      "candidate": "candidate_4d64092c8fa3415ab45b888d377938eb",
+      "preparation": "cert_preparation_0ccf70ff562e459a8ad6882b949007d3",
+      "frozen": "cert_operating_candidate_acf1b0243b6343beb551523161a385d8",
+      "candidate_sha256": "23887dda6eff2bc80bad9767314c8fcd7f89d2b7b3ccf6d361087308f1ca3302",
+      "preparation_sha256": "758d00c0e766b683cc2bc8b9dadc7ee299866419bcb2e4db9cfc9cce4d0b4aad",
+      "frozen_sha256": "96895a50419a07f43d0c3e0e3987403826d946101ace475a6bcec17bb25cead9",
+      "config_sha256": "28703ec9747c89a2f3bd22f6dadd028e39746848356c54cf81d6fa9151c749a3",
+      "model_sha256": "ac6fc96f155cc4157e30f4cb31edee816f81a799db9b542acfbf4efe66939431",
+      "state_sha256": "826a0b2b89eee4b1408612dd1725be8d8227387c461f7d6c30d75ce401fc0928",
+      "train_inputs_sha256": "7a53357ec8caa8fa7e051f4232fd0ddbcb5a4433d000d7422a6257ef7535b97d",
+      "fit_ids_sha256": "a35500e08bec64c70fb6f01dd308fe9409224afe09d0c0d488985fb5044e4e22",
+      "labels_sha256": "0780f00fdfadd61790a03f84b803cfa8c452325f7a20bfe4cf991514e26a6b13",
+      "groups_sha256": "4193e1f909d9ba2e736c0c5b72afad81eb6873cd47d016d524ba2e51b94e1043",
+      "weights_sha256": "fb95d3bef2d0f565abaa557c60dd7df7a7e07444ff8ebe789ecdd367c06760eb",
+      "tabular_order_sha256": "1918fc8e7bda980edbbc27c31085effda6501fa1380166006147a4b8cd051e0e",
+      "accounts": 317,
+      "groups": 317,
+      "fit_days": 106256,
+      "fit_endpoints": 104988,
+      "endpoint_positives": 334,
+      "by_class": {
+        "0": {
+          "days": 105922,
+          "groups": 317,
+          "mass": 53128.0,
+          "minimum": 0.339263592,
+          "maximum": 6.70384858,
+          "effective_days": 92914.705964
+        },
+        "1": {
+          "days": 334,
+          "groups": 19,
+          "mass": 53128.0,
+          "minimum": 79.891729323,
+          "maximum": 2796.210526316,
+          "effective_days": 99.895683
+        }
+      }
+    },
+    "H3_H0_inner1": {
+      "candidate": "candidate_6b7fe63221ff4cd2b803a58343eaf9f7",
+      "preparation": "cert_preparation_943a4e4d28a8424b89d1b4b8e72fcc04",
+      "frozen": "cert_operating_candidate_5190b42639b346fab1ffa58a772318f8",
+      "candidate_sha256": "2fbc0d7b6c507910420782cfd9b6b03fc7d2ba86c96b2a8a8793dc85725d26d2",
+      "preparation_sha256": "a5a92929cae6b5bb469c375d7720a194d150c34ff9a3644f90dc66e50cc8c037",
+      "frozen_sha256": "44d0f93b30857e4ae218e1b4b601dee0c80f74a05fae0b5ad2bcadb60e91fc37",
+      "config_sha256": "28703ec9747c89a2f3bd22f6dadd028e39746848356c54cf81d6fa9151c749a3",
+      "model_sha256": "fca945e70256bf0acc67e8b73626711cbcd9a76a4cabdd2af0ded0bebe6e9ac7",
+      "state_sha256": "3636192a5d3f499b3f0325fd0c99026c0d73f301f86b5c6e970d8e4f12a4b605",
+      "train_inputs_sha256": "bb237733cbe009aef07aee753c08c62b91b725b6b9856eb2d4f1ee3883a43782",
+      "fit_ids_sha256": "f6997d5b2cc08832c97c4fde3e41cb257983a585e386fb024984a46e338c6041",
+      "labels_sha256": "87a019776e2c6217f3a59473a623976faf5e04a881bea5c57f288f2a4bca9044",
+      "groups_sha256": "be508c93f4dbf3dede8bd942254fff375ee01e51d6432fa9c976352f13ab8b8b",
+      "weights_sha256": "d7671281a3fcc0fb217bd6eaa7fd7994911a4eaf97a08e88eaacd543e07eba9c",
+      "tabular_order_sha256": "1918fc8e7bda980edbbc27c31085effda6501fa1380166006147a4b8cd051e0e",
+      "accounts": 237,
+      "groups": 237,
+      "fit_days": 79650,
+      "fit_endpoints": 78702,
+      "endpoint_positives": 250,
+      "by_class": {
+        "0": {
+          "days": 79400,
+          "groups": 237,
+          "mass": 39825.0,
+          "minimum": 0.344340112,
+          "maximum": 4.801084991,
+          "effective_days": 71420.651069
+        },
+        "1": {
+          "days": 250,
+          "groups": 15,
+          "mass": 39825.0,
+          "minimum": 88.5,
+          "maximum": 2655.0,
+          "effective_days": 78.478094
+        }
+      }
+    },
+    "H3_H0_inner2": {
+      "candidate": "candidate_4ea8a05bf90e48a9abf2d96cff4b2ef1",
+      "preparation": "cert_preparation_cd36200590404339999e14768dd042c4",
+      "frozen": "cert_operating_candidate_aff7292e5b9340a9aa9fa4790e6ea190",
+      "candidate_sha256": "0cc9a2db93245d58e7e00dc50fbb6fda6089f59244abb230a547a9884790569b",
+      "preparation_sha256": "6e16f79358326c59e0efb736f97cf0a3fe6ccec19159a8d770ff12c90d3e1c9e",
+      "frozen_sha256": "01b8058a10fffa757cac21c6fecdf09b06ea7f57b8c336fcb27f8a1af1545be0",
+      "config_sha256": "28703ec9747c89a2f3bd22f6dadd028e39746848356c54cf81d6fa9151c749a3",
+      "model_sha256": "806355d3db735961d3ca3c5677d8aad4db617ef2a6d81e3bba72576e87ebf8ec",
+      "state_sha256": "8a328d3fe0683d414ae9e8697d29e59ffa4f66af3b392388b18067d1ffe0a301",
+      "train_inputs_sha256": "579ab23cede6546394c63194a631a97d297d134a03a8aff057039a539a39ff3a",
+      "fit_ids_sha256": "5dbc75225467ebd19d84174bc580f163153f0c9edadc7585b7c13ba1fc64526f",
+      "labels_sha256": "0886bf232c38019771d1780b61d4c12d9b105e4816448ce195e5bff2f92787cf",
+      "groups_sha256": "f472d199e593ca54eea65a1ca0433653e997803b61cd49abca19690280a31c22",
+      "weights_sha256": "3c717e9e8fa20069ffe0b4e992718c6220b84e3be72839dbc71a5d8ce7b1c508",
+      "tabular_order_sha256": "1918fc8e7bda980edbbc27c31085effda6501fa1380166006147a4b8cd051e0e",
+      "accounts": 245,
+      "groups": 237,
+      "fit_days": 79673,
+      "fit_endpoints": 78693,
+      "endpoint_positives": 267,
+      "by_class": {
+        "0": {
+          "days": 79406,
+          "groups": 237,
+          "mass": 39836.5,
+          "minimum": 0.1025543,
+          "maximum": 5.796086134,
+          "effective_days": 66035.856329
+        },
+        "1": {
+          "days": 267,
+          "groups": 12,
+          "mass": 39836.5,
+          "minimum": 103.740885417,
+          "maximum": 1106.569444444,
+          "effective_days": 116.801872
+        }
+      }
+    },
+    "H3_H0_inner3": {
+      "candidate": "candidate_272772a922544becb0bf60b1991ec27e",
+      "preparation": "cert_preparation_33007e40be2148dcade74128a8a20a6b",
+      "frozen": "cert_operating_candidate_2f7342485a3749eaab8da3278a67b3fd",
+      "candidate_sha256": "76ffc2fce597307f474db67ad25309038bb82f299229c0cbbedef2390e9330db",
+      "preparation_sha256": "af365f12da2885aa0c6c05a5e1f5748ef8b5b943f6c23abd258c34507efe9e79",
+      "frozen_sha256": "5c0507e3e8dd08aeb35cd4de09781c5fcb0bffc09d30168d0747f61025bafcc0",
+      "config_sha256": "28703ec9747c89a2f3bd22f6dadd028e39746848356c54cf81d6fa9151c749a3",
+      "model_sha256": "b117d8b20b2210bdb1848e8f3e68a789a0713452af5cd44624053fa1b4b9f205",
+      "state_sha256": "b284362222ef741ac495921149abbff05d0adfd8bd1a1087cca789eeadc281e8",
+      "train_inputs_sha256": "13e5314a5e7c43659a7b15ed7621573f78a351631ad29073e83ca7fab1fbfc85",
+      "fit_ids_sha256": "65197794720c02613228ad563969f66fb7d8c987a5802eed05fc198f75aa8bae",
+      "labels_sha256": "3304c56b1ce80de565180b99b04b2515da7512852a44832ae63308454473f635",
+      "groups_sha256": "02f93c2c472ed61d48518208540d97255ec7644f15bde364ca357ddb7baa29b6",
+      "weights_sha256": "aefd353f11563718bb4a7f66a35938b9f65273827e1efc2c64467b6ba8186e56",
+      "tabular_order_sha256": "1918fc8e7bda980edbbc27c31085effda6501fa1380166006147a4b8cd051e0e",
+      "accounts": 244,
+      "groups": 236,
+      "fit_days": 79698,
+      "fit_endpoints": 78722,
+      "endpoint_positives": 281,
+      "by_class": {
+        "0": {
+          "days": 79417,
+          "groups": 236,
+          "mass": 39849.0,
+          "minimum": 0.103021168,
+          "maximum": 5.822472238,
+          "effective_days": 66576.687103
+        },
+        "1": {
+          "days": 281,
+          "groups": 15,
+          "mass": 39849.0,
+          "minimum": 80.503030303,
+          "maximum": 1328.3,
+          "effective_days": 90.850584
+        }
+      }
+    },
+    "hgb_rolling_seed42_fold3": {
+      "candidate": "candidate_49d6cb046fcb43d5a087ad7c33c0fe30",
+      "preparation": "cert_preparation_bbd8aef054eb480a9570a5b3acbcf149",
+      "frozen": "cert_operating_candidate_0c13807424d642619ab1a88365e8fae5",
+      "candidate_sha256": "5f8e660050bb2f339a01dda1104c80db9ea84a2bd25c8269a60ae77385dc414e",
+      "preparation_sha256": "8bcc86bc44864b967c362a89673c62e0a4f9abef433486194c0a1665bc60accc",
+      "frozen_sha256": "245e0e6576b9a20f6467f0b5f72a50b117fb32defa1f0f5b0ae76695e4bc89a6",
+      "config_sha256": "28703ec9747c89a2f3bd22f6dadd028e39746848356c54cf81d6fa9151c749a3",
+      "model_sha256": "6cb32668acee205fdf9599c3b3de68422ba955a9d3d0300664128a5a284df363",
+      "state_sha256": "e3c2f43fee38075e71dc635391d1541a2ff0061e7853f8fbdcb39060ed3924a0",
+      "train_inputs_sha256": "2b2da581958bb1d80a3e0d7b0468de46e4acfa48519ce6e2266b14129a9dd37f",
+      "fit_ids_sha256": "a546814bf53ee2fcc2b06567bfdf64ff9b811f3ff529cf5c997a0be86af2b4f7",
+      "labels_sha256": "7333f2ac9cbbfb73a96c66d023b4fae9942d12cf5112144f4e9e1b36f2bba84d",
+      "groups_sha256": "d63173b8b9a7b22605b769a2da00ad1db3a3dead3a1a5f6874f01e4970b73572",
+      "weights_sha256": "bd3c47e31ded7bc87da4b91df46ec478df0b4f26473f246dca19eb73d653c807",
+      "tabular_order_sha256": "1918fc8e7bda980edbbc27c31085effda6501fa1380166006147a4b8cd051e0e",
+      "accounts": 316,
+      "groups": 316,
+      "fit_days": 106222,
+      "fit_endpoints": 104958,
+      "endpoint_positives": 351,
+      "by_class": {
+        "0": {
+          "days": 105871,
+          "groups": 316,
+          "mass": 53111.0,
+          "minimum": 0.339540979,
+          "maximum": 4.802079566,
+          "effective_days": 94821.095364
+        },
+        "1": {
+          "days": 351,
+          "groups": 21,
+          "mass": 53111.0,
+          "minimum": 76.639249639,
+          "maximum": 2529.095238095,
+          "effective_days": 104.64348
+        }
+      }
+    }
+  }
+}

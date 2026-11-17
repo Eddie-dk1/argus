@@ -1,0 +1,338 @@
+{
+  "schema_version": "argus.cert_s6_personal_context_protocol.v2",
+  "protocol_id": "cert_s6_personal_context_group_weight_v2",
+  "declared_date": "2026-11-18",
+  "status": "fit_population_amended_runtime_pending",
+  "quality_contribution": "Next bounded causal-feature and training-weight experiment; no fit is authorized by merely reading this file",
+  "hypotheses": {
+    "personal_context": "Past-only email/web/off-hours deviations and short-versus-long personal trends separate unusual behavior from persistently active background accounts",
+    "group_weight": "Equal fit loss mass for connected-group/class cells reduces domination by long positive episodes",
+    "interaction": "Personal context and group weighting can improve recall at the same FP1 calibration rule; the factorial ablation separates their contributions"
+  },
+  "evidence": {
+    "s4_protocol_sha256": "7532fdef06f767ef40fc80d65780fb6c5dbaa57067273b5ca65ba6c91a6b404c",
+    "s4_bindings_sha256": "2cd879b4db86fcb73e44e7d4538adb1296751d6d62942f4a3fb072771b195d60",
+    "s4_synthesis_id": "cert_s4_synthesis_6eb97020a94e4350a3f1136b20c4319e",
+    "s4_synthesis_manifest_sha256": "6e52155b2cfa68b2bf57af62bfffdd7170cc22d63cf02747910958ccbd35f71c",
+    "s4_synthesis_summary_sha256": "24a68d435a7fe22abbdbf009fd6baea97463eb7723ec84c90f18950c0d30b198",
+    "s4_new_fits": 112,
+    "s4_reuses": 8,
+    "s4_primary_goal_confirmed": false,
+    "outer_reuse": "All three development outer folds have informed this proposal; even nested re-execution is exploratory, not independent confirmation"
+  },
+  "sources": {
+    "daily": {
+      "id": "cert_days_2ccb63d841e14a84940cc01a16c1a9f2",
+      "manifest_sha256": "784b9271685251aecf2124955a4f1469263825cb12368220cb00d45d0bcb86e6",
+      "snapshot_id": "b9184d3b5eec1780008155193ab0d27cc48bd0e7755477b51eeca7603693f487"
+    },
+    "model_variants": {
+      "id": "cert_model_variants_dd1281e93f8940c591264affbc572a07",
+      "manifest_sha256": "573e8e3cbebf2283ef232d8a49064733d70ac991dccfd22696905295dc846369",
+      "expected_runs": 60
+    },
+    "operating_points": {
+      "id": "cert_operating_point_1677f9343b73418ea6887db0b680d458",
+      "manifest_sha256": "9f417f3c02b55865bb27cb8015b619fc9d97d1b15d87e32f84604061506312c9",
+      "expected_runs": 45
+    },
+    "control_bindings": {
+      "path": "configs/cert_s4_control_bindings_v1.json",
+      "sha256": "2cd879b4db86fcb73e44e7d4538adb1296751d6d62942f4a3fb072771b195d60",
+      "saved_runs": 105,
+      "decision_profiles": 195,
+      "preparations": 12
+    }
+  },
+  "population": {
+    "scope": "original primary train only",
+    "active_days": 199165,
+    "endpoints": 196765,
+    "observable_positives": 646,
+    "background": 196119,
+    "accounts": 600,
+    "connected_groups": 592,
+    "positive_accounts": 46,
+    "positive_groups": 38,
+    "endpoint_contract": "Exclude the first four active account-days per account exactly as in S4; all remaining endpoints and original labels retained",
+    "split_unit": "incident-connected group",
+    "primary_validation_allowed": false,
+    "primary_test_allowed": false,
+    "used_test_date": "2026-11-13"
+  },
+  "roles": {
+    "outer_folds": 3,
+    "outer_roles": "Exact saved S4 outer train/calibration/assessment memberships",
+    "inner_parts": 5,
+    "inner_partition_seeds": [
+      343,
+      344,
+      345
+    ],
+    "inner_rotations": 3,
+    "inner_rotation_roles": "selection=i, calibration=(i+1)%5, fit=remaining three parts, i=0,1,2; outer assessment entirely excluded",
+    "no_reshuffle_for_metrics": true,
+    "outer_roles_sha256": {
+      "fold_1": "9ee21ca7bf1f5236c2ae75df67c0ac9766b6307bdea3fded1e2aa0629645e9de",
+      "fold_2": "13900fec6d9b2ed69cc3cdaccc48d813a12aae188fd298afb3a3bc9ee42e8544",
+      "fold_3": "ece64c8c2eb325490f057e92e4c9d7ef19fdc51ef47c14b9d83b1c91b4f18ea4"
+    },
+    "inner_roles_sha256": {
+      "fold_1": "a840c85ef004377d03ef32a9a7f76ba10213e0d3b37cda78e269823c689fe4df",
+      "fold_2": "86c7099ab2e30835c442b14e1edbaf262261dc88cff8be3ed764c5e5920ca3a9",
+      "fold_3": "36de314c4c9727e961611ab2ec0dccfa085da18ee7b923caf03a77c5489009c4"
+    }
+  },
+  "models": {
+    "family": "hist_gradient_boosting",
+    "model_seed": 42,
+    "additional_seed_trials": 0,
+    "seed_rationale": "S4 HGB controls and selected models had exact identical scores for five seeds per fold. Use one declared seed in this small cycle; seed variation of NEW variants is not estimated or claimed zero. Fold variation remains separate.",
+    "base": {
+      "learning_rate": 0.05,
+      "max_iter": 200,
+      "max_depth": 4,
+      "max_leaf_nodes": 15,
+      "min_samples_leaf": 20,
+      "l2_regularization": 1.0,
+      "early_stopping": false,
+      "loss": "log_loss",
+      "max_bins": 255
+    },
+    "excluded_new_trials": [
+      "RF tuning",
+      "IF tuning",
+      "LSTM size or epoch search",
+      "new ensemble selection",
+      "threshold-profile promotion",
+      "external boosting-library search"
+    ]
+  },
+  "variants": [
+    {
+      "id": "Q0",
+      "features": "saved_rolling_75",
+      "class_weight": "balanced",
+      "sample_weight": null,
+      "role": "exact primary HGB control"
+    },
+    {
+      "id": "Q1",
+      "features": "saved_rolling_75_plus_personal_27",
+      "class_weight": "balanced",
+      "sample_weight": null,
+      "role": "feature-only ablation"
+    },
+    {
+      "id": "Q2",
+      "features": "saved_rolling_75",
+      "class_weight": null,
+      "sample_weight": "group_class_equal_mass_all_fit_days_v2",
+      "role": "weight-only ablation"
+    },
+    {
+      "id": "Q3",
+      "features": "saved_rolling_75_plus_personal_27",
+      "class_weight": null,
+      "sample_weight": "group_class_equal_mass_all_fit_days_v2",
+      "role": "joint hypothesis"
+    }
+  ],
+  "feature_contract": {
+    "id": "cert_s6_causal_behavior_context_v1",
+    "base_features": 75,
+    "new_features": 27,
+    "total_features": 102,
+    "raw_metrics": [
+      "off_hours_events",
+      "logon_off_hours_events",
+      "device_off_hours_events",
+      "email_events",
+      "email_external_message_count",
+      "email_external_recipient_count",
+      "email_size_bytes_sum",
+      "email_attachment_count",
+      "email_with_attachment_count",
+      "http_events",
+      "http_distinct_domains",
+      "http_distinct_urls"
+    ],
+    "value_transform": "log1p(x), finite nonnegative counts/bytes only",
+    "history_scope": "same account, same role; [date-30,date) and [date-7,date); active days; never current or future day",
+    "minimum_prior30_days": 5,
+    "minimum_prior7_days": 2,
+    "personal_deviation": "clip((log1p(x_today)-median(log1p(past30)))/max(IQR(log1p(past30)),1),-20,20), one per raw metric",
+    "short_long_trend": "clip((median(log1p(past7))-median(log1p(past30)))/max(IQR(log1p(past30)),1),-20,20), one per raw metric",
+    "fallback": "If prior30 has fewer than five days, deviation uses frozen unweighted all-fit-active-day global log1p median/IQR (IQR floor 1). Missing short/long trend is zero.",
+    "support_features": [
+      "behavior_profile_missing",
+      "behavior_trend_missing",
+      "behavior_prior7_days_log1p"
+    ],
+    "profile_missing": "int(prior30_count<5)",
+    "trend_missing": "int(prior30_count<5 or prior7_count<2)",
+    "update": "emit features before observing current input in every role; labels never clean, skip or reset history",
+    "scaling": "Fit unweighted mean/std for new columns on permitted fit active days only; std<=1e-12 maps to 1; retain common 75 values/feature order/CSV parsing exactly",
+    "dependency_manifest": "Store exact ordered prior7/prior30 item lists, fallback state hash, scaler hash and feature formula/version; original 5-day endpoint/window membership unchanged",
+    "forbidden_inputs": [
+      "labels",
+      "account IDs",
+      "connected-group IDs",
+      "incident IDs",
+      "scenario/answer-key attribution",
+      "future context",
+      "source paths",
+      "URL/domain/recipient identities",
+      "old model decisions or scores"
+    ],
+    "s4_four_ratios_included": false
+  },
+  "training_weight": {
+    "id": "group_class_equal_mass_all_fit_days_v2",
+    "scope": "All ordered H0 active days in the permitted fit only",
+    "formula": "w_i = N_fit_days / (2 * M_c * n_g_c); c=y_i, M_c counts fit groups containing c, n_g_c counts all fit days for group g with class c",
+    "class_weight": null,
+    "checks": [
+      "weights finite and positive",
+      "sum of each class weights equals N_fit_days/2",
+      "equal total weight for every present group/class cell within class",
+      "sum weights equals N_fit_days",
+      "IDs/group/labels remain external provenance; numeric feature inputs do not change",
+      "calibration/assessment receive no training or metric weights"
+    ],
+    "metric_weighting": "None: retain original unweighted account-day metrics and supports",
+    "risk": "Rare fit groups gain weight; assess extra FP and scenario regressions without dropping these groups",
+    "diagnostics": "Per class: day and group support, min/max weight and effective day count (sum w)^2/sum(w^2). This describes weight concentration only."
+  },
+  "calibration": {
+    "primary_profile": "fp1_per_1000",
+    "scope": "permitted calibration endpoints only, after frozen weights",
+    "objective": "maximum recall under integer background FP1 budget",
+    "budget": "floor(N_background/1000)",
+    "ties": [
+      "lower FP",
+      "higher numeric threshold"
+    ],
+    "minimum_recall": 0.5,
+    "infeasible": "Freeze the best budget-respecting FP1 threshold and mark ineligible if calibration recall <0.5. Keep its selection/assessment metrics with that flag. No fallback, replacement, refit or promotion.",
+    "operator": ">=",
+    "score_direction": "higher_is_more_anomalous",
+    "legacy_f1_and_fp2": "Diagnostic profiles only, following the same saved rules; never selected from outer results"
+  },
+  "inner_selection": {
+    "reports_required_per_variant_per_outer_fold": 3,
+    "all_reports_must_be_complete_and_defined": true,
+    "lexicographic_order": [
+      "more selection parts with FP1 and recall>=0.5 jointly",
+      "more selection parts within FP1",
+      "higher minimum selection recall",
+      "higher mean within-part PR-AUC",
+      "higher mean selection recall",
+      "lower maximum FP/1000 background",
+      "fixed Q0,Q1,Q2,Q3 order"
+    ],
+    "freeze_before_final": true,
+    "outer_selects_model_threshold_or_extra_trial": false,
+    "eligibility_reporting": "Rank complete, defined inner selection metrics by the listed order, as in v1. Report calibration eligibility separately for each rotation and final fold. If none rankable, mark incomplete; if all final calibrations are ineligible, report no eligible operating point.",
+    "outer_barrier": "Freeze choices for all three folds, then final weights and three numeric thresholds before any outer assessment."
+  },
+  "budget": {
+    "inner_dispatch_slots": 36,
+    "required_exact_control_reuses": 9,
+    "max_new_inner_fits": 27,
+    "final_dispatch_slots": 3,
+    "max_new_final_fits": 3,
+    "total_dispatch_slots": 39,
+    "max_new_research_fit_attempts": 30,
+    "max_new_behavior_preprocessing_states": 12,
+    "workers": 1,
+    "cpu_threads": 1,
+    "gpu": false,
+    "wall_time_hours": 4,
+    "minimum_free_disk_gib": 30,
+    "peak_worker_rss_stop_gib": 8,
+    "failed_and_interrupted_count": true,
+    "automatic_retries": 0,
+    "budget_expansion_allowed": false,
+    "reuse": "Q0 must match immutable saved S4 H0 config/seed/input/state/labels/membership/weights; missing or incompatible exact reuse marks incomplete, never an automatic fresh control fit"
+  },
+  "assessment_acceptance": {
+    "profile": "fp1_per_1000",
+    "minimum_every_outer_fold": {
+      "recall": 0.5,
+      "fp_per_1000_background": 1.0
+    },
+    "substantial_improvement_targets_on_pooled_decisions": {
+      "precision": 0.7,
+      "recall": 0.65,
+      "f1_score": 0.65
+    },
+    "within_fold_pr_auc_mean_minimum": 0.7056424951531356,
+    "scenario_tp_nonregression_vs_primary_control": {
+      "1": 35,
+      "2": 346,
+      "3": 6
+    },
+    "positive_group_coverage_minimum": 34,
+    "all_conditions_must_hold_for_substantial_improvement_claim": true,
+    "targets_are_not_predictions": true,
+    "aggregate_cross_fold_pr_auc": false,
+    "independent_confirmation": false,
+    "automatic_active_promotion": false
+  },
+  "required_before_research_execution": [
+    "Separate user-requested quality increment; S4.7 itself performs no fits",
+    "Implement a new versioned plan/worker and immutable runtime/source/role bindings; existing S4 runner must not silently interpret this new schema",
+    "Synthetic formula/oracle/causality/label-independence and group-weight tests",
+    "Train-only state fit, exact 75-feature preservation, stable endpoints and explicit provenance audit",
+    "Freeze full job identities, runtime/config hashes, success gates and total budget before first attempt; open one new ledger",
+    "Check actual disk space and SSD bindings; read-only progress view",
+    "Run declared matrix once and retain all weak/failed results"
+  ],
+  "next_increments": [
+    {
+      "number": "S6.2",
+      "work": "Implement, test and freeze runtime, roles, data and exact reuse bindings; no research fits."
+    },
+    {
+      "number": "S6.3",
+      "work": "Run the predeclared matrix once."
+    },
+    {
+      "number": "S6.4",
+      "work": "Assess paired outcomes, fold transfer, group coverage and cost; no extra fits."
+    }
+  ],
+  "independent_confirmation": {
+    "required_for_confirmatory_claim": true,
+    "rule": "Separately accepted compatible behavioral source with entity/duplicate/episode audit, source/schema/label contracts and a frozen model/threshold before opening it",
+    "network_datasets_substitute_for_CERT_confirmation": false,
+    "test_repartition_creates_new_evidence": false
+  },
+  "implementation_reference": "https://scikit-learn.org/1.8/modules/generated/sklearn.ensemble.HistGradientBoostingClassifier.html",
+  "amends": {
+    "path": "configs/cert_s6_personal_context_v1.json",
+    "sha256": "0eb74c8e6695856b2a8f6086b8584e5fc731f574a716ea7e0e39dc0eeeda42fd"
+  },
+  "fit_population": {
+    "variants": [
+      "Q0",
+      "Q1",
+      "Q2",
+      "Q3"
+    ],
+    "scope": "All active account-days in the permitted H0 model-fit role, including the first four per account; exact saved row order.",
+    "row_identity": "Compare ordered item IDs, labels, connected groups and common 75 columns to H0 before every fit. Q2/Q3 weights are aligned one-for-one; Q1/Q3 append personal27.",
+    "h0_config": {
+      "path": "configs/cert_r4_2_file_usb_rolling_v4_hist_gradient_boosting_v5.json",
+      "sha256": "96578cbd0bb65ff7139f0e742a5be6e9db487dae6f14e92196e36f5e4f7962e1"
+    },
+    "s4_study": "cert_quality_study_b99ae5381cf84e07b4b4f3386f1e663a",
+    "cycle_a_manifest_sha256": "7ceac2e6a602ce45de421def4691311d87754ae06371679e8c4e91779a03c46d",
+    "assessment": "Unweighted, original five-active-day endpoints only. Identifiers and groups are provenance only.",
+    "reference": {
+      "path": "configs/cert_s6_fit_bindings_v2.json",
+      "sha256": "20e30624bfa3c1327b57b40cfe13544ae0ab51ef785e0784e1fa43f37a6edd06"
+    }
+  }
+}
