@@ -1,56 +1,25 @@
 # Argus
 
-Argus is an academic research project for anomaly detection in user behavior
-and network activity. The current priority is **model quality, reliable
-comparisons and reproducible evidence**.
+Argus studies whether changes in a person's daily computer activity can identify insider-threat events at a low false-alarm rate. The project evaluates account-day predictions on CERT r4.2 and provides a deterministic synthetic benchmark for comparing anomaly detectors.
 
-## Current status
+## CERT r4.2 results
 
-Updated **2026-11-14**. The published `argus-v0.2.0` release is the historical
-synthetic reference. Current development includes CERT research and the
-completed S3 frozen runtime; a new release is not implied by these changes.
+The S6 experiment tested two changes to histogram gradient boosting (HGB): comparing activity with the account's own recent history and weighting training days by group and class. Model selection used inner group splits. All three decision thresholds were fixed before outer assessment.
 
-| Area | State |
-|---|---|
-| Synthetic benchmark | Deterministic generation, causal features, aligned RF/IF/LSTM evaluation |
-| CERT r4.2 | Accepted local snapshot, audited observable labels, incident-group split, daily preparation, frozen final and five controlled quality increments |
-| S3 | Complete: common inference, exact replay, quality diagnosis and verified synthetic raw scenarios |
-| S4 | Agreed next: error investigation and two bounded model-improvement cycles; not started |
-| Spectra Lab UI | Planned after the research foundations; model quality has priority |
-| CICIDS2017 / CSE-CIC-IDS2018 | Contracts and acquisition research; not yet accepted or evaluated |
+| Primary operating point | Precision | Recall | F1 | Mean fold PR-AUC | False alarms |
+|---|---:|---:|---:|---:|---:|
+| Historical HGB control | 52.23% | 59.91% | 0.5580 | 0.7056 | 354 |
+| S6 selected models | 82.47% | 85.91% | 0.8415 | 0.8985 | 118 |
 
-The [seven-part S4 plan](docs/s4-model-quality-plan.md) covers HGB context
-features/regularization, RF and LSTM alternatives, and saved controls. Its
-matrix has at most 117 new research fits, an overall ceiling of 120 and up to 12
-hours of experiment execution. These experiments have **not been run**.
+On 196,765 account-days, S6 detected **555 of 646 positive days**, up from 387. Two of three folds met the joint target of at least 50% recall and at most one false alarm per 1,000 background days. The third recorded 72 false alarms against a budget of 65. Scenario 3 remains difficult, with 8 of 32 positive days detected in a single incident-connected group.
 
-See the [roadmap](docs/roadmap.md) and
-[stage assessment](docs/cert-r4.2-stage-assessment.md).
+These figures come from three previously used development folds with model seed 42. Independent confirmation remains open. The original CERT test was used on 2026-11-13. [Experiment report](docs/s6-factorial-experiment.md) · [Results for all 39 jobs](docs/s6-factorial-results.json)
 
-## Current CERT quality
+## Project status
 
-HGB rolling is the research candidate. RF, IF and both LSTM score policies
-remain reproducible comparisons. The table uses seed 42 and pooled decisions
-from three reused development group folds: **196,765 endpoints, 646 observable
-positives**. Thresholds come from separate inner calibration.
+S3 delivered frozen inference and replay. S4 completed the baseline investigations and bounded model comparisons. S6.3 completed the personal-history and group-weight experiment. **Next is S6.4**, a paired analysis of which errors changed, how false alarms are distributed across accounts, and how much the gains vary across groups.
 
-| HGB profile | Precision | Recall | F1 | TP | FP | FN | FP/1,000 background days |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| Primary FP1/1,000 | 52.23% | 59.91% | 0.5580 | 387 | 354 | 259 | 1.805 |
-| Unchanged legacy F1 control | 59.34% | 60.99% | 0.6015 | 394 | 270 | 252 | 1.377 |
-
-Mean within-fold PR-AUC is 0.7056; cross-fold score rankings are not pooled.
-The primary requirement, **FP≤1/1,000 and recall≥50% together**, fails on all
-three unique outer folds. All five HGB seeds produce identical scores;
-repetition does not add independent evidence. Scenario 3 recall is 6/32 with
-only one independent connected group.
-
-The original CERT test was used on 2026-11-13. Improved HGB results are reused
-**development evidence**, not independent confirmation or production IDS
-performance. The legacy F1 profile has not been promoted after examining outer
-results. Details: [model variants](docs/cert-r4.2-model-variants-v5.md),
-[operating points](docs/cert-r4.2-operating-point-v6.md),
-[S3 diagnosis](docs/s3-frozen-diagnostics.md).
+The synthetic benchmark covers random forest, isolation forest and an LSTM autoencoder. Spectra Lab UI and evaluation on CICIDS2017 and CSE-CIC-IDS2018 remain planned. The published v0.2.0 release documents the historical synthetic reference.
 
 ## Setup
 

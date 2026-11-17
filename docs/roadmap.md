@@ -1,5 +1,7 @@
 # Roadmap — Argus / Spectra Lab
 
+**Research update, 2026-11-18.** S4 and S6.1–S6.3 are complete. S6.4 paired error analysis is next. The dated roadmap below records the earlier plan. [S6.3 results](s6-factorial-experiment.md)
+
 Updated: 2026-11-14. This is the single chronological roadmap. The [Spectra implementation plan](spectra-lab-implementation-plan.md) defines product scope and code changes; the [experimental protocol](experimental-protocol.md) defines evaluation rules.
 
 ## Current state
